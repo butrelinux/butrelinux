@@ -64,46 +64,52 @@ cleanup_build_deps() {
     trap - EXIT
     set +e
 
-    # Reduce the tracked list to what is actually installed now.
-    _installed=""
-    for _p in ${BUILD_DEPS}; do
-        rpm -q --quiet "${_p}" 2>/dev/null && _installed="${_installed} ${_p}"
-    done
-
-    # Drop anything that a package OUTSIDE the removal set depends on,
-    # iterating until stable (dropping one can block another).
-    _pass=0
-    while [ "${_pass}" -lt 10 ]; do
-        _pass=$((_pass + 1))
-        _changed=false
-        _keep=""
-        for _p in ${_installed}; do
-            _blocked=false
-            for _u in $(rpm -q --whatrequires --qf '%{NAME}\n' "${_p}" 2>/dev/null \
-                        | grep -v '^no package requires' | sort -u); do
-                [ "${_u}" = "${_p}" ] && continue
-                case " ${_installed} " in
-                *" ${_u} "*) ;;
-                *) _blocked=true; break ;;
-                esac
-            done
-            if [ "${_blocked}" = "true" ]; then
-                log "Keeping ${_p} (required by a non-build package)."
-                _changed=true
-            else
-                _keep="${_keep} ${_p}"
-            fi
+    # Removing packages can unblock ones that were kept because a package in the
+    # removal set (or one dnf autoremoves with it) depended on them, so go
+    # round again until nothing more can be removed.
+    _round=0
+    while [ "${_round}" -lt 3 ]; do
+        _round=$((_round + 1))
+        # Reduce the tracked list to what is actually installed now.
+        _installed=""
+        for _p in ${BUILD_DEPS}; do
+            rpm -q --quiet "${_p}" 2>/dev/null && _installed="${_installed} ${_p}"
         done
-        _installed="${_keep}"
-        [ "${_changed}" = "false" ] && break
-    done
 
-    if [ -n "${_installed}" ]; then
-        log "Removing build-time dependencies:${_installed}"
+        # Drop anything that a package OUTSIDE the removal set depends on,
+        # iterating until stable (dropping one can block another).
+        _pass=0
+        while [ "${_pass}" -lt 10 ]; do
+            _pass=$((_pass + 1))
+            _changed=false
+            _keep=""
+            for _p in ${_installed}; do
+                _blocked=false
+                for _u in $(rpm -q --whatrequires --qf '%{NAME}\n' "${_p}" 2>/dev/null \
+                            | grep -v '^no package requires' | sort -u); do
+                    [ "${_u}" = "${_p}" ] && continue
+                    case " ${_installed} " in
+                    *" ${_u} "*) ;;
+                    *) _blocked=true; break ;;
+                    esac
+                done
+                if [ "${_blocked}" = "true" ]; then
+                    log "Keeping ${_p} (required by a non-build package)."
+                    _changed=true
+                else
+                    _keep="${_keep} ${_p}"
+                fi
+            done
+            _installed="${_keep}"
+            [ "${_changed}" = "false" ] && break
+        done
+
+        [ -n "${_installed}" ] || break
+        log "Removing build-time dependencies (round ${_round}):${_installed}"
         # shellcheck disable=SC2086
         dnf -y remove ${_installed} \
-            || err "Failed to remove some build-time dependencies (non-fatal)."
-    fi
+            || { err "Failed to remove some build-time dependencies (non-fatal)."; break; }
+    done
 
     # The akmods account is created by package scriptlets and survives removal.
     if [ "${_AKMODS_USER_PRE}" = "false" ] && getent passwd akmods >/dev/null 2>&1; then
@@ -366,6 +372,22 @@ build_v4l2loopback_patched() {
     log "Installed patched v4l2loopback to ${_dest}"
 }
 
+# Print every version-release for which EVERY package named in $1
+# (space-separated) is available from the enabled repos, newest first.
+complete_kernel_versions() {
+    _avail=$(dnf -q repoquery --available --showduplicates \
+        --queryformat '%{name} %{version}-%{release}\n' $1 2>/dev/null | sort -u)
+    [ -n "${_avail}" ] || return 0
+    for _v in $(printf '%s\n' "${_avail}" | awk '{print $2}' | sort -uVr); do
+        _ok=true
+        for _n in $1; do
+            printf '%s\n' "${_avail}" | grep -qx "${_n} ${_v}" || { _ok=false; break; }
+        done
+        [ "${_ok}" = "true" ] && printf '%s\n' "${_v}"
+    done
+    return 0
+}
+
 # Make the repository that carries the selected kernel available.
 setup_kernel_repo() {
     case "${KERNEL_TYPE}" in
@@ -388,19 +410,43 @@ setup_kernel_repo() {
     esac
 }
 
-# Drop the repo configuration again once the kernel is installed.
+# Fail if a repo whose id/name matches $1 (case-insensitive) is still enabled.
+# Last resort before failing: disable it by id.
+assert_repo_gone() {
+    if dnf -q repolist --enabled 2>/dev/null | grep -qi "$1"; then
+        dnf -y config-manager --set-disabled "*$1*" >/dev/null 2>&1 || true
+    fi
+    if dnf -q repolist --enabled 2>/dev/null | grep -qi "$1"; then
+        err "A repo matching '$1' is still enabled after cleanup:"
+        dnf -q repolist --enabled >&2 || true
+        return 1
+    fi
+    return 0
+}
+
+# Drop the repo configuration again once the kernel is installed, and verify it.
+# Release packages are removed WITHOUT dependency cleanup (so nothing else goes
+# with them), which means every release package has to be named: removing only
+# the one we installed would leave its dependencies (and their repos) behind.
 cleanup_kernel_repo() {
     case "${KERNEL_TYPE}" in
     cachyos-lto)
         rm -f /etc/yum.repos.d/*copr*
+        assert_repo_gone copr || return 1
         ;;
     ml)
-        dnf -y remove --setopt=clean_requirements_on_remove=False elrepo-release || true
-        rm -f /etc/yum.repos.d/elrepo*.repo
+        _pkgs=$(rpm -qa --qf '%{NAME}\n' 'elrepo-release*' | sort -u | tr '\n' ' ')
+        # shellcheck disable=SC2086
+        [ -z "${_pkgs}" ] || dnf -y remove --setopt=clean_requirements_on_remove=False ${_pkgs} || true
+        find /etc/yum.repos.d /etc/distro.repos.d -iname '*elrepo*' -delete 2>/dev/null || true
+        assert_repo_gone elrepo || return 1
         ;;
     hyperscale)
-        dnf -y remove --setopt=clean_requirements_on_remove=False centos-release-hyperscale-kernel || true
-        rm -f /etc/yum.repos.d/*hyperscale*.repo
+        _pkgs=$(rpm -qa --qf '%{NAME}\n' 'centos-release-hyperscale*' | sort -u | tr '\n' ' ')
+        # shellcheck disable=SC2086
+        [ -z "${_pkgs}" ] || dnf -y remove --setopt=clean_requirements_on_remove=False ${_pkgs} || true
+        find /etc/yum.repos.d /etc/distro.repos.d -iname '*hyperscale*' -delete 2>/dev/null || true
+        assert_repo_gone hyperscale || return 1
         ;;
     stock)
         ;;
@@ -545,16 +591,52 @@ else
     # No kernel is installed here, but keep the hooks quiet in case a scriptlet fires.
     disable_kernel_install_hooks
     STOCK_VERSION=$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}\n' | sort -V | tail -n 1) || exit 1
+    STOCK_ARCH=$(rpm -E %_arch)
     log "Installed stock kernel: ${STOCK_VERSION}"
-    # The repos can lag the base image. Installing a devel package for a
-    # different version would make dnf up/downgrade the kernel to match, so
-    # require the exact version and fail early instead.
-    if ! dnf -q repoquery --available "kernel-devel-${STOCK_VERSION}" 2>/dev/null | grep -q "kernel-devel-.*${STOCK_VERSION}"; then
-        err "No kernel-devel-${STOCK_VERSION} in the enabled repos (they may lag the base image)."
-        err "Rebuild later, use a fresher mirror, or pick a non-stock kernel."
+
+    # The repos can lag the base image. Everything we need has to exist at ONE
+    # version: every kernel package the base ships plus kernel-devel. Use the
+    # installed version if the repos carry the full set for it; otherwise fall
+    # back to the newest version for which they do.
+    STOCK_KPKGS=$(rpm -qa --qf '%{NAME}\n' \
+        | grep -E '^kernel(-core|-modules|-modules-core|-modules-extra)?$' | sort -u | tr '\n' ' ')
+    STOCK_NEED="${STOCK_KPKGS}kernel-devel"
+    log "Packages that must match: ${STOCK_NEED}"
+
+    _complete=$(complete_kernel_versions "${STOCK_NEED}")
+    if [ -z "${_complete}" ]; then
+        err "No kernel version in the enabled repos provides all of: ${STOCK_NEED}"
         exit 1
     fi
-    KERNEL_PACKAGES="kernel-devel-${STOCK_VERSION}"
+    if printf '%s\n' "${_complete}" | grep -qx "${STOCK_VERSION}"; then
+        STOCK_TARGET="${STOCK_VERSION}"
+    else
+        STOCK_TARGET=$(printf '%s\n' "${_complete}" | head -n 1)
+    fi
+
+    if [ "${STOCK_TARGET}" != "${STOCK_VERSION}" ]; then
+        log "WARNING: the repos do not carry a complete set for the installed ${STOCK_VERSION}."
+        log "Switching the stock kernel to the newest complete set: ${STOCK_TARGET}."
+        _pkgs=""
+        for _n in ${STOCK_KPKGS}; do _pkgs="${_pkgs} ${_n}-${STOCK_TARGET}"; done
+        _newest=$(printf '%s\n%s\n' "${STOCK_VERSION}" "${STOCK_TARGET}" | sort -V | tail -n 1)
+        if [ "${_newest}" = "${STOCK_VERSION}" ]; then
+            # shellcheck disable=SC2086
+            dnf -y downgrade ${_pkgs}
+        else
+            # shellcheck disable=SC2086
+            dnf -y install ${_pkgs}
+        fi
+        # The old kernel's files are gone with its packages, but its
+        # untracked initramfs (and the directory) are not.
+        rm -rf "/usr/lib/modules/${STOCK_VERSION}.${STOCK_ARCH}"
+        # The new kernel has no initramfs yet; without one the image cannot boot.
+        if [ "${INITRAMFS}" != "true" ]; then
+            log "Forcing initramfs generation for the switched kernel."
+            INITRAMFS=true
+        fi
+    fi
+    KERNEL_PACKAGES="kernel-devel-${STOCK_TARGET}"
 fi
 
 log "Installing kernel packages: ${KERNEL_PACKAGES}"
@@ -567,8 +649,8 @@ dnf -y ${KERNEL_REPO_OPT} install ${KERNEL_PACKAGES} akmods
 KERNEL_VERSION=$(rpm -q "${KERNEL_PKG}" --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort -V | tail -n 1) || exit 1
 log "Kernel version: ${KERNEL_VERSION}"
 
-if [ "${KERNEL_TYPE}" = "stock" ] && [ "${KERNEL_VERSION}" != "${STOCK_VERSION}.$(rpm -E %_arch)" ]; then
-    err "The stock kernel changed during install (${STOCK_VERSION} -> ${KERNEL_VERSION})."
+if [ "${KERNEL_TYPE}" = "stock" ] && [ "${KERNEL_VERSION}" != "${STOCK_TARGET}.${STOCK_ARCH}" ]; then
+    err "The stock kernel changed unexpectedly during install (expected ${STOCK_TARGET}.${STOCK_ARCH}, got ${KERNEL_VERSION})."
     exit 1
 fi
 KERNEL_SOURCE="/usr/src/kernels/${KERNEL_VERSION}"
@@ -598,7 +680,7 @@ log "Restoring kernel install scripts."
 restore_kernel_install_hooks
 
 log "Cleaning up kernel source repo configuration."
-cleanup_kernel_repo
+cleanup_kernel_repo || exit 1
 
 # ---------------------------------------------------------------------------
 # Build v4l2loopback
@@ -890,11 +972,13 @@ fi
 # Final integrity checks
 # ---------------------------------------------------------------------------
 
-# bootc expects exactly one kernel under /usr/lib/modules.
-_kdirs=$(find /usr/lib/modules -mindepth 1 -maxdepth 1 -type d | wc -l)
-if [ "${_kdirs}" -ne 1 ] || [ ! -d "/usr/lib/modules/${KERNEL_VERSION}" ]; then
-    err "Expected exactly one kernel directory (${KERNEL_VERSION}) under /usr/lib/modules, found:"
-    find /usr/lib/modules -mindepth 1 -maxdepth 1 -type d >&2
+# bootc expects exactly one kernel under /usr/lib/modules. Only directories that
+# hold a vmlinuz are kernels; some kernel packages (e.g. Hyperscale) also ship
+# kabi-* directories, which are not.
+_kernels=$(find /usr/lib/modules -mindepth 2 -maxdepth 2 -name vmlinuz | sed 's|/vmlinuz$||' | sort)
+if [ "${_kernels}" != "/usr/lib/modules/${KERNEL_VERSION}" ]; then
+    err "Expected exactly one kernel (/usr/lib/modules/${KERNEL_VERSION}) with a vmlinuz, found:"
+    printf '%s\n' "${_kernels:-<none>}" >&2
     exit 1
 fi
 
@@ -915,4 +999,3 @@ if [ "${NVIDIA}" = "true" ]; then
 fi
 
 log "Custom kernel installation complete."
-# Build-time dependencies are removed and DNF caches cleaned by the EXIT trap.
