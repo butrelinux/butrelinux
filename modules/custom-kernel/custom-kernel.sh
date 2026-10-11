@@ -588,6 +588,9 @@ if [ "${KERNEL_REPLACE}" = "true" ]; then
     rm -rf /usr/lib/modules/* || true
 else
     log "Keeping the stock kernel; installing only its matching devel tree."
+    log "##########################################################################"
+    log "#####               ! WARNING: UNSTABLE.  DO NOT USE !               #####"
+    log "##########################################################################"
     # No kernel is installed here, but keep the hooks quiet in case a scriptlet fires.
     disable_kernel_install_hooks
     STOCK_VERSION=$(rpm -q kernel-core --queryformat '%{VERSION}-%{RELEASE}\n' | sort -V | tail -n 1) || exit 1
