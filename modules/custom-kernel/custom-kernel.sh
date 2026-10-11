@@ -64,46 +64,52 @@ cleanup_build_deps() {
     trap - EXIT
     set +e
 
-    # Reduce the tracked list to what is actually installed now.
-    _installed=""
-    for _p in ${BUILD_DEPS}; do
-        rpm -q --quiet "${_p}" 2>/dev/null && _installed="${_installed} ${_p}"
-    done
-
-    # Drop anything that a package OUTSIDE the removal set depends on,
-    # iterating until stable (dropping one can block another).
-    _pass=0
-    while [ "${_pass}" -lt 10 ]; do
-        _pass=$((_pass + 1))
-        _changed=false
-        _keep=""
-        for _p in ${_installed}; do
-            _blocked=false
-            for _u in $(rpm -q --whatrequires --qf '%{NAME}\n' "${_p}" 2>/dev/null \
-                        | grep -v '^no package requires' | sort -u); do
-                [ "${_u}" = "${_p}" ] && continue
-                case " ${_installed} " in
-                *" ${_u} "*) ;;
-                *) _blocked=true; break ;;
-                esac
-            done
-            if [ "${_blocked}" = "true" ]; then
-                log "Keeping ${_p} (required by a non-build package)."
-                _changed=true
-            else
-                _keep="${_keep} ${_p}"
-            fi
+    # Removing packages can unblock ones that were kept because a package in the
+    # removal set (or one dnf autoremoves with it) depended on them, so go
+    # round again until nothing more can be removed.
+    _round=0
+    while [ "${_round}" -lt 3 ]; do
+        _round=$((_round + 1))
+        # Reduce the tracked list to what is actually installed now.
+        _installed=""
+        for _p in ${BUILD_DEPS}; do
+            rpm -q --quiet "${_p}" 2>/dev/null && _installed="${_installed} ${_p}"
         done
-        _installed="${_keep}"
-        [ "${_changed}" = "false" ] && break
-    done
 
-    if [ -n "${_installed}" ]; then
-        log "Removing build-time dependencies:${_installed}"
+        # Drop anything that a package OUTSIDE the removal set depends on,
+        # iterating until stable (dropping one can block another).
+        _pass=0
+        while [ "${_pass}" -lt 10 ]; do
+            _pass=$((_pass + 1))
+            _changed=false
+            _keep=""
+            for _p in ${_installed}; do
+                _blocked=false
+                for _u in $(rpm -q --whatrequires --qf '%{NAME}\n' "${_p}" 2>/dev/null \
+                            | grep -v '^no package requires' | sort -u); do
+                    [ "${_u}" = "${_p}" ] && continue
+                    case " ${_installed} " in
+                    *" ${_u} "*) ;;
+                    *) _blocked=true; break ;;
+                    esac
+                done
+                if [ "${_blocked}" = "true" ]; then
+                    log "Keeping ${_p} (required by a non-build package)."
+                    _changed=true
+                else
+                    _keep="${_keep} ${_p}"
+                fi
+            done
+            _installed="${_keep}"
+            [ "${_changed}" = "false" ] && break
+        done
+
+        [ -n "${_installed}" ] || break
+        log "Removing build-time dependencies (round ${_round}):${_installed}"
         # shellcheck disable=SC2086
         dnf -y remove ${_installed} \
-            || err "Failed to remove some build-time dependencies (non-fatal)."
-    fi
+            || { err "Failed to remove some build-time dependencies (non-fatal)."; break; }
+    done
 
     # The akmods account is created by package scriptlets and survives removal.
     if [ "${_AKMODS_USER_PRE}" = "false" ] && getent passwd akmods >/dev/null 2>&1; then
@@ -404,19 +410,43 @@ setup_kernel_repo() {
     esac
 }
 
-# Drop the repo configuration again once the kernel is installed.
+# Fail if a repo whose id/name matches $1 (case-insensitive) is still enabled.
+# Last resort before failing: disable it by id.
+assert_repo_gone() {
+    if dnf -q repolist --enabled 2>/dev/null | grep -qi "$1"; then
+        dnf -y config-manager --set-disabled "*$1*" >/dev/null 2>&1 || true
+    fi
+    if dnf -q repolist --enabled 2>/dev/null | grep -qi "$1"; then
+        err "A repo matching '$1' is still enabled after cleanup:"
+        dnf -q repolist --enabled >&2 || true
+        return 1
+    fi
+    return 0
+}
+
+# Drop the repo configuration again once the kernel is installed, and verify it.
+# Release packages are removed WITHOUT dependency cleanup (so nothing else goes
+# with them), which means every release package has to be named: removing only
+# the one we installed would leave its dependencies (and their repos) behind.
 cleanup_kernel_repo() {
     case "${KERNEL_TYPE}" in
     cachyos-lto)
         rm -f /etc/yum.repos.d/*copr*
+        assert_repo_gone copr || return 1
         ;;
     ml)
-        dnf -y remove --setopt=clean_requirements_on_remove=False elrepo-release || true
-        rm -f /etc/yum.repos.d/elrepo*.repo
+        _pkgs=$(rpm -qa --qf '%{NAME}\n' 'elrepo-release*' | sort -u | tr '\n' ' ')
+        # shellcheck disable=SC2086
+        [ -z "${_pkgs}" ] || dnf -y remove --setopt=clean_requirements_on_remove=False ${_pkgs} || true
+        find /etc/yum.repos.d /etc/distro.repos.d -iname '*elrepo*' -delete 2>/dev/null || true
+        assert_repo_gone elrepo || return 1
         ;;
     hyperscale)
-        dnf -y remove --setopt=clean_requirements_on_remove=False centos-release-hyperscale-kernel || true
-        rm -f /etc/yum.repos.d/*hyperscale*.repo
+        _pkgs=$(rpm -qa --qf '%{NAME}\n' 'centos-release-hyperscale*' | sort -u | tr '\n' ' ')
+        # shellcheck disable=SC2086
+        [ -z "${_pkgs}" ] || dnf -y remove --setopt=clean_requirements_on_remove=False ${_pkgs} || true
+        find /etc/yum.repos.d /etc/distro.repos.d -iname '*hyperscale*' -delete 2>/dev/null || true
+        assert_repo_gone hyperscale || return 1
         ;;
     stock)
         ;;
@@ -650,7 +680,7 @@ log "Restoring kernel install scripts."
 restore_kernel_install_hooks
 
 log "Cleaning up kernel source repo configuration."
-cleanup_kernel_repo
+cleanup_kernel_repo || exit 1
 
 # ---------------------------------------------------------------------------
 # Build v4l2loopback
@@ -969,4 +999,3 @@ if [ "${NVIDIA}" = "true" ]; then
 fi
 
 log "Custom kernel installation complete."
-# Build-time dependencies are removed and DNF caches cleaned by the EXIT trap.
