@@ -179,8 +179,9 @@ jobs:
             -vga virtio \
             -device virtio-net-pci,netdev=n1 \
             -netdev user,id=n1,hostfwd=tcp:127.0.0.1:2222-:22 \
-            -nographic \
             -serial "file:$RESULTS/serial.log" \
+            -display none \
+            -monitor none \
             -pidfile "$PIDFILE" \
             -daemonize
 
