@@ -153,7 +153,7 @@ jobs:
               sudo kill "$(cat "$PIDFILE")" 2>/dev/null || true
               rm -f "$PIDFILE"
             fi
-
+            sudo chown -R "$(id -u):$(id -g)" "$RESULTS"
             unset SSHPASS
             rm -f "$PASSWORD_FILE"
           }
@@ -241,6 +241,16 @@ jobs:
         run: |
           rm -f "output/$VARIANT/config.toml"
           rm -f "$RUNNER_TEMP/guest-password"
+
+      - name: Fix result file ownership
+        if: always()
+        env:
+          VARIANT: ${{ matrix.variant }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" "results/$VARIANT" 2>/dev/null || true
+          if [[ -f "output/$VARIANT/test-disk.qcow2" ]]; then
+            sudo chown "$(id -u):$(id -g)" "output/$VARIANT/test-disk.qcow2"
+          fi
 
       - name: Upload variant results
         if: always()
