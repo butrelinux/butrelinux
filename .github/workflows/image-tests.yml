@@ -149,20 +149,16 @@ jobs:
           PASSWORD_FILE="$RUNNER_TEMP/guest-password"
 
           cleanup() {
-            if [[ -f "$PIDFILE" ]]; then
-              QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
+          if [[ -f "$PIDFILE" ]]; then
+          QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
+          if [[ "$QEMU_PID" =~ ^[0-9]+$ ]]; then
+            sudo kill "$QEMU_PID" 2>/dev/null || true
+          fi
+            sudo rm -f "$PIDFILE" 2>/dev/null || true
+          fi
 
-              if [[ -n "$QEMU_PID" ]]; then
-                sudo kill "$QEMU_PID" 2>/dev/null || true
-              fi
-
-              sudo rm -f "$PIDFILE" 2>/dev/null || true
-            fi
-
-            sudo chown -R "$(id -u):$(id -g)" "$RESULTS" 2>/dev/null || true
-
-            unset SSHPASS
-            rm -f "$PASSWORD_FILE"
+          sudo chown -R "$(id -u):$(id -g)" "$RESULTS" 2>/dev/null || true
+          rm -f "$PASSWORD_FILE"
           }
 
           sudo qemu-system-x86_64 \
