@@ -163,7 +163,6 @@ jobs:
           export SSHPASS="$GUEST_PASSWORD"
           unset GUEST_PASSWORD
 
-          # Use KVM when available; otherwise use software emulation.
           if sudo test -r /dev/kvm -a -w /dev/kvm; then
             ACCEL_ARGS=(-enable-kvm -cpu host)
           else
@@ -257,9 +256,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results-${{ matrix.variant }}
-          path: |
-            results/${{ matrix.variant }}/
-            output/${{ matrix.variant }}/test-disk.qcow2
+          path: results/${{ matrix.variant }}/
           if-no-files-found: warn
           retention-days: 14
 
@@ -315,7 +312,6 @@ jobs:
               if [[ -f "$status" ]]; then
                 build="$(sed -n 's/^build=//p' "$status")"
                 tests="$(sed -n 's/^tests=//p' "$status")"
-
                 printf '| %s | %s | %s |\n' \
                   "$variant" "$build" "$tests"
               else
@@ -324,7 +320,37 @@ jobs:
             done
 
             echo
-            echo "See the workflow run artifacts for logs and disk images."
+            echo "---"
+            echo
+            echo "# System details"
+            echo
+
+            for variant in \
+              lts \
+              lto \
+              lto-nvidia \
+              ml \
+              ml-nvidia \
+              hyperscale \
+              hyperscale-nvidia; do
+
+              report="collected/results-$variant/results/$variant/report.md"
+
+              echo "## $variant"
+              echo
+
+              if [[ -f "$report" ]]; then
+                sed '1{/^# Image test report$/d;}' "$report"
+              else
+                echo "No system report was produced for this variant."
+              fi
+
+              echo
+              echo "---"
+              echo
+            done
+
+            echo "Full logs and raw command output are available in the workflow run artifacts."
           } > .github/tests/README.md
 
       - name: Commit README to default branch
