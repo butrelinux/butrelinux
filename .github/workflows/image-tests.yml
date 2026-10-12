@@ -150,24 +150,20 @@ jobs:
 
           cleanup() {
             if [[ -f "$PIDFILE" ]]; then
-              sudo kill "$(cat "$PIDFILE")" 2>/dev/null || true
-              rm -f "$PIDFILE"
+              QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
+
+              if [[ -n "$QEMU_PID" ]]; then
+                sudo kill "$QEMU_PID" 2>/dev/null || true
+              fi
+
+              sudo rm -f "$PIDFILE" 2>/dev/null || true
             fi
-            sudo chown -R "$(id -u):$(id -g)" "$RESULTS"
+
+            sudo chown -R "$(id -u):$(id -g)" "$RESULTS" 2>/dev/null || true
+
             unset SSHPASS
             rm -f "$PASSWORD_FILE"
           }
-          trap cleanup EXIT
-
-          GUEST_PASSWORD="$(cat "$PASSWORD_FILE")"
-          export SSHPASS="$GUEST_PASSWORD"
-          unset GUEST_PASSWORD
-
-          if sudo test -r /dev/kvm -a -w /dev/kvm; then
-            ACCEL_ARGS=(-enable-kvm -cpu host)
-          else
-            ACCEL_ARGS=(-accel tcg -cpu max)
-          fi
 
           sudo qemu-system-x86_64 \
             -name "$VARIANT" \
@@ -287,7 +283,8 @@ jobs:
           set -euo pipefail
 
           mkdir -p .github/tests
-
+          echo "Downloaded artifact contents:"
+          find collected -maxdepth 4 -type f -print | sort || true
           {
             echo "# Image test results"
             echo
@@ -307,7 +304,7 @@ jobs:
               hyperscale \
               hyperscale-nvidia; do
 
-              status="collected/results-$variant/results/$variant/status.txt"
+              status="collected/results-$variant/status.txt"
 
               if [[ -f "$status" ]]; then
                 build="$(sed -n 's/^build=//p' "$status")"
@@ -334,7 +331,7 @@ jobs:
               hyperscale \
               hyperscale-nvidia; do
 
-              report="collected/results-$variant/results/$variant/report.md"
+              report="collected/results-$variant/report.md"
 
               echo "## $variant"
               echo
