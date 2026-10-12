@@ -1,18 +1,18 @@
 # Image test results
 
-Workflow run: [#6](https://github.com/butrelinux/butrelinux/actions/runs/38316139747)
+Workflow run: [#7](https://github.com/butrelinux/butrelinux/actions/runs/38318591491)
 
-Overall matrix result: **success**
+Overall matrix result: **failure**
 
 | Variant | Build | Tests |
 |---|---|---|
-| lts | missing | missing |
-| lto | missing | missing |
-| lto-nvidia | missing | missing |
-| ml | missing | missing |
-| ml-nvidia | missing | missing |
-| hyperscale | missing | missing |
-| hyperscale-nvidia | missing | missing |
+| lts | success | failure |
+| lto | success | failure |
+| lto-nvidia | success | failure |
+| ml | success | failure |
+| ml-nvidia | success | failure |
+| hyperscale | success | failure |
+| hyperscale-nvidia | success | failure |
 
 ---
 
