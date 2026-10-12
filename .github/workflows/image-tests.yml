@@ -34,7 +34,8 @@ jobs:
           - ml-nvidia
           - hyperscale
           - hyperscale-nvidia
-        # if you need to add more variants, there's another loop down in the "Generate combined README" step that needs to be updated as well.  I know I'll forget that section if I don't mention it.
+
+          # there are some loops down in generate combined readme that includes these as well.  fix the duplication later.  for now, just be sure to add them there too
 
     steps:
       - name: Check out repository
@@ -148,18 +149,45 @@ jobs:
           PIDFILE="$RUNNER_TEMP/qemu-$VARIANT.pid"
           PASSWORD_FILE="$RUNNER_TEMP/guest-password"
 
-          cleanup() {
-          if [[ -f "$PIDFILE" ]]; then
-          QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
-          if [[ "$QEMU_PID" =~ ^[0-9]+$ ]]; then
-            sudo kill "$QEMU_PID" 2>/dev/null || true
-          fi
-            sudo rm -f "$PIDFILE" 2>/dev/null || true
+          mkdir -p "$RESULTS"
+
+          if [[ ! -f "$PASSWORD_FILE" ]]; then
+            echo "Guest password file is missing" >&2
+            exit 1
           fi
 
-          sudo chown -R "$(id -u):$(id -g)" "$RESULTS" 2>/dev/null || true
-          rm -f "$PASSWORD_FILE"
+          GUEST_PASSWORD="$(cat "$PASSWORD_FILE")"
+          export SSHPASS="$GUEST_PASSWORD"
+          unset GUEST_PASSWORD
+
+          cleanup() {
+            set +e
+
+            if [[ -f "$PIDFILE" ]]; then
+              QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null)"
+
+              if [[ "$QEMU_PID" =~ ^[0-9]+$ ]]; then
+                sudo kill "$QEMU_PID" 2>/dev/null
+              fi
+
+              sudo rm -f "$PIDFILE" 2>/dev/null
+            fi
+
+            sudo chown -R "$(id -u):$(id -g)" "$RESULTS" \
+              2>/dev/null
+
+            unset SSHPASS
+            rm -f "$PASSWORD_FILE"
           }
+
+          trap cleanup EXIT
+
+          # Prefer KVM when available; otherwise use software emulation.
+          if [[ -e /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
+            ACCEL_ARGS=(-enable-kvm -cpu host)
+          else
+            ACCEL_ARGS=(-accel tcg -cpu max)
+          fi
 
           sudo qemu-system-x86_64 \
             -name "$VARIANT" \
@@ -188,17 +216,31 @@ jobs:
 
           ready=false
 
-          for _ in $(seq 1 120); do
+          echo "Waiting for $VARIANT to become SSH-accessible..."
+
+          for attempt in $(seq 1 120); do
             if sshpass -e ssh "${SSH_OPTS[@]}" \
               butrelinux@127.0.0.1 true 2>/dev/null; then
               ready=true
+              echo "SSH is ready after attempt $attempt"
               break
             fi
+
+            # Fail early if QEMU has already exited.
+            QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
+            if [[ "$QEMU_PID" =~ ^[0-9]+$ ]] &&
+               ! sudo kill -0 "$QEMU_PID" 2>/dev/null; then
+              echo "QEMU exited before SSH became ready" >&2
+              break
+            fi
+
             sleep 5
           done
 
           if [[ "$ready" != true ]]; then
             echo "Guest did not become SSH-accessible" >&2
+            echo "Last lines of serial output:" >&2
+            sudo tail -n 100 "$RESULTS/serial.log" >&2 || true
             exit 1
           fi
 
@@ -238,10 +280,8 @@ jobs:
         env:
           VARIANT: ${{ matrix.variant }}
         run: |
-          sudo chown -R "$(id -u):$(id -g)" "results/$VARIANT" 2>/dev/null || true
-          if [[ -f "output/$VARIANT/test-disk.qcow2" ]]; then
-            sudo chown "$(id -u):$(id -g)" "output/$VARIANT/test-disk.qcow2"
-          fi
+          sudo chown -R "$(id -u):$(id -g)" "results/$VARIANT" \
+            2>/dev/null || true
 
       - name: Upload variant results
         if: always()
@@ -279,8 +319,10 @@ jobs:
           set -euo pipefail
 
           mkdir -p .github/tests
+
           echo "Downloaded artifact contents:"
           find collected -maxdepth 4 -type f -print | sort || true
+
           {
             echo "# Image test results"
             echo
@@ -305,6 +347,7 @@ jobs:
               if [[ -f "$status" ]]; then
                 build="$(sed -n 's/^build=//p' "$status")"
                 tests="$(sed -n 's/^tests=//p' "$status")"
+
                 printf '| %s | %s | %s |\n' \
                   "$variant" "$build" "$tests"
               else

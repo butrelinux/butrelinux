@@ -42,7 +42,6 @@ guest 'cat /usr/share/butrelinux/image-info.json' \
   > "$IMAGE_INFO"
 
 OS_NAME="$(
-  . /dev/null 2>/dev/null || true
   sed -n 's/^PRETTY_NAME=//p' "$RESULTS_DIR/os-release.txt" |
     head -n 1 |
     tr -d '"'
@@ -69,7 +68,9 @@ PLASMA_VERSION="$(
 )"
 
 if [[ -n "$PLASMA_VERSION" ]]; then
-  printf '%s\n' "$PLASMA_VERSION" > "$RESULTS_DIR/plasma-version.txt"
+  printf '%s\n' "$PLASMA_VERSION" \
+    > "$RESULTS_DIR/plasma-version.txt"
+
   {
     echo
     echo "## KDE Plasma"
@@ -103,9 +104,6 @@ if grep -qi nvidia "$IMAGE_INFO"; then
 else
   echo "NVIDIA: not applicable"
 fi
-
-guest 'cat /etc/os-release' >/dev/null
-guest 'uname -a' >/dev/null
 
 echo
 echo "Report written to $REPORT"
