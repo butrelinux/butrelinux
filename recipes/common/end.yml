@@ -5,7 +5,12 @@ modules:
        - JetBrainsMono
        - NerdFontsSymbolsOnly
        - Noto
-
+       
+  - type: dnf
+    install:
+      packages:
+        - linux-firmware
+        
   - type: systemd
     system:
       enabled:
