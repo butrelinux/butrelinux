@@ -27,7 +27,6 @@ modules:
         - kde-connect
         - bluedevil
         - dolphin
-        - kate
         - konsole
         - kio-admin
         - ark
@@ -52,6 +51,7 @@ modules:
         - alsa-firmware
         - pipewire-utils
         - plasma-pa
+        - nvtop
 
   - type: dnf
     install:
