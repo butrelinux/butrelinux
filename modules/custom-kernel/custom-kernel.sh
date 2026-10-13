@@ -204,14 +204,14 @@ ml | kernel-ml)
     KERNEL_TYPE="ml"
     KERNEL_PKG="kernel-ml-core"
     # core/modules/modules-core come in as dependencies
-    KERNEL_PACKAGES="kernel-ml kernel-ml-devel kernel-ml-modules-extra"
+    KERNEL_PACKAGES="kernel-ml kernel-ml-devel kernel-ml-modules kernel-ml-modules-extra"
     KERNEL_BUILD_PKGS="kernel-ml-devel"
     KERNEL_REPO_OPT="--enablerepo=elrepo-kernel"
     KERNEL_VERSION_MARK="*.elrepo.*"
     ;;
 hyperscale)
     KERNEL_PKG="kernel-core"
-    KERNEL_PACKAGES="kernel kernel-modules-extra kernel-devel kernel-devel-matched"
+    KERNEL_PACKAGES="kernel kernel-modules-extra kernel-modules-extra kernel-devel kernel-devel-matched"
     KERNEL_BUILD_PKGS="kernel-devel kernel-devel-matched"
     KERNEL_VERSION_MARK="*.hs*"
     ;;
@@ -223,7 +223,7 @@ stock)
     # KERNEL_PACKAGES is set below to the devel package for the EXACT installed
     # kernel version (kernel-devel-matched would let dnf downgrade the kernel
     # to whatever version the repos happen to carry).
-    KERNEL_PACKAGES=""
+    KERNEL_PACKAGES="kernel-modules kernel-modules-extra kernel-modules-extra-matched"
     KERNEL_BUILD_PKGS="kernel-devel-matched kernel-devel"
     ;;
 *)
