@@ -6,7 +6,7 @@ Centos Stream 10 bootc with KDE plasma and many kernel choices
 ## installation  
 ISO downloads available here:  
 [![Download butrelinux](https://a.fsdn.com/con/app/sf-download-button)](https://butrelinux.sourceforge.io/)  
-the ISO is the main installation path, rebase instructions are provided for convenience for existing bluefin lts users.  
+the ISO is the main installation path, rebase instructions are provided for convenience for existing el10 bootc users (bluefin-lts, centos-bootc, heliumos, etc.)  
 
 ### rebase instructions
 
@@ -16,7 +16,6 @@ if you use the rebase instructions you must rebase from a centos stream derived 
 > [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
 
 to rebase an existing EL10 based installation to the latest build:
-#### 
 
 ```bash
 # switch to the signed image and reboot:
@@ -38,7 +37,7 @@ sudo bootc switch --enforce-container-sigpolicy ghcr.io/butrelinux/<variant>:lat
 
 these images are signed with sigstore's cosign. you can verify the signature by downloading the cosign.pub file from this repo and running the following command:  
 ```
-cosign verify --key cosign.pub ghcr.io/butrelinux/< VARIANT >
+cosign verify --key cosign.pub ghcr.io/butrelinux/lts:latest
 ```
 if you ever hit ASN.1 invalid signature failure during an upgrade it's because I rotated out the keys.  sorry.  it was probably dependabot's fault.  you can fetch the new keys with the following command
 ```
@@ -46,8 +45,6 @@ sudo curl -Lo /etc/pki/containers/butrelinux.pub https://raw.githubusercontent.c
 ```
 this shouldn't ever be an issue, but it's worth documenting.
 
-
-
 ## migration
 
-we're still migrating from butrejp/butrelinux.  pretty close to done though
+we're still migrating from butrejp/butrelinux.  pretty close to done though.  existing users can freely rebase, new users will be able to get an ISO from either this repository's releases or sourceforge, sometime in the next few days.  
