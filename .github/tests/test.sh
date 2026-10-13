@@ -86,10 +86,10 @@ printf '%s\n' "$NVIDIA_VERSION" \
   > "$RESULTS_DIR/nvidia-version.txt"
 
 MESA_VERSION="$(
-  guest 'rpm -q --qf "%{NAME} %{VERSION}-%{RELEASE}\n" "mesa*" 2>/dev/null || true' \
+  guest 'rpm -q --qf "%{VERSION}-%{RELEASE}\n" mesa-dri-drivers 2>/dev/null || rpm -q --qf "%{VERSION}-%{RELEASE}\n" mesa-libGL 2>/dev/null || true' \
     2>/dev/null |
     sort -u |
-    paste -sd '; ' - || true
+    paste -sd ', ' - || true
 )"
 
 MESA_VERSION="${MESA_VERSION:-Not detected}"
