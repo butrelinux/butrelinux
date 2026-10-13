@@ -18,7 +18,6 @@ modules:
       masked:
         - rpcbind.service
         - rpcbind.socket
-#        - systemd-oomd.service
         - system-flatpak-setup.timer
         - systemd-resolved.service
 
@@ -26,5 +25,8 @@ modules:
     kargs:
       - amdgpu.ppfeaturemask=0xffffffff
       - split_lock_detect=off
-      
+
+  - type: clean-repos
+    source: local
+
   - type: signing

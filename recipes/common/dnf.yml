@@ -66,6 +66,8 @@ modules:
       packages:
         - rhc
         - insights-client
+        - insights-core
+        - subscription-manager
 
   - type: fedora-rpm
     source: local
