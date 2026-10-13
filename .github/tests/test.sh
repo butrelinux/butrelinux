@@ -32,7 +32,7 @@ echo "Testing $SSH_USER@$SSH_HOST:$SSH_PORT"
 guest 'cat /etc/os-release' \
   > "$RESULTS_DIR/os-release.txt"
 
-guest 'uname -a' \
+guest 'uname -srm' \
   > "$RESULTS_DIR/uname.txt"
 
 guest 'systemctl is-system-running || true' \
@@ -50,60 +50,53 @@ OS_NAME="$(
 KERNEL="$(cat "$RESULTS_DIR/uname.txt")"
 SYSTEM_STATE="$(cat "$RESULTS_DIR/system-state.txt")"
 
-{
-  echo "# Image test report"
-  echo
-  echo "## System information"
-  echo
-  echo "| Property | Value |"
-  echo "|---|---|"
-  printf '| OS | %s |\n' "${OS_NAME:-Unknown}"
-  printf '| Kernel | %s |\n' "$KERNEL"
-  printf '| systemd | %s |\n' "$SYSTEM_STATE"
-} > "$REPORT"
-
 PLASMA_VERSION="$(
   guest 'plasmashell --version 2>/dev/null || rpm -q plasma-workspace 2>/dev/null || true' \
     2>/dev/null || true
 )"
 
-if [[ -n "$PLASMA_VERSION" ]]; then
-  printf '%s\n' "$PLASMA_VERSION" \
-    > "$RESULTS_DIR/plasma-version.txt"
+PLASMA_VERSION="${PLASMA_VERSION:-Not detected}"
 
-  {
-    echo
-    echo "## KDE Plasma"
-    echo
-    printf '%s\n' "$PLASMA_VERSION"
-  } >> "$REPORT"
-else
-  {
-    echo
-    echo "## KDE Plasma"
-    echo
-    echo "No Plasma version detected."
-  } >> "$REPORT"
-fi
+printf '%s\n' "$PLASMA_VERSION" \
+  > "$RESULTS_DIR/plasma-version.txt"
+
+NVIDIA_VERSION="Not applicable"
 
 if grep -qi nvidia "$IMAGE_INFO"; then
   NVIDIA_VERSION="$(
-    guest 'nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null || modinfo -F version nvidia 2>/dev/null || rpm -qa | grep -Ei "nvidia.*(driver|kmod)|akmod-nvidia" || true' \
-      2>/dev/null || true
+    guest 'rpm -q --qf "%{VERSION}-%{RELEASE}\n" akmod-nvidia kmod-nvidia 2>/dev/null; rpm -q --qf "%{VERSION}-%{RELEASE}\n" xorg-x11-drv-nvidia 2>/dev/null; modinfo -F version nvidia 2>/dev/null' \
+      2>/dev/null |
+      sed '/^$/d' |
+      sort -u |
+      paste -sd ', ' - || true
   )"
 
-  printf '%s\n' "${NVIDIA_VERSION:-Not detected in the running VM}" \
-    > "$RESULTS_DIR/nvidia-version.txt"
+  NVIDIA_VERSION="${NVIDIA_VERSION:-Installed driver not detected}"
 
-  {
-    echo
-    echo "## NVIDIA"
-    echo
-    printf '%s\n' "${NVIDIA_VERSION:-Not detected in the running VM}"
-  } >> "$REPORT"
-else
-  echo "NVIDIA: not applicable"
+  if guest 'nvidia-smi --query-gpu=driver_version --format=csv,noheader' \
+      > "$RESULTS_DIR/nvidia-smi.txt" 2>/dev/null; then
+    NVIDIA_GPU_STATUS="GPU detected"
+  else
+    NVIDIA_GPU_STATUS="No GPU detected in VM"
+    rm -f "$RESULTS_DIR/nvidia-smi.txt"
+  fi
 fi
+
+{
+  echo "# Image test report"
+  echo
+  echo "| Property | Value |"
+  echo "|---|---|"
+  printf '| OS | %s |\n' "${OS_NAME:-Unknown}"
+  printf '| Kernel | `%s` |\n' "$KERNEL"
+  printf '| systemd | %s |\n' "$SYSTEM_STATE"
+  printf '| KDE Plasma | %s |\n' "$PLASMA_VERSION"
+
+  if grep -qi nvidia "$IMAGE_INFO"; then
+    printf '| NVIDIA driver | %s |\n' "$NVIDIA_VERSION"
+    printf '| NVIDIA GPU | %s |\n' "$NVIDIA_GPU_STATUS"
+  fi
+} > "$REPORT"
 
 echo
 echo "Report written to $REPORT"

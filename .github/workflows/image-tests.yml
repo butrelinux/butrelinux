@@ -182,7 +182,6 @@ jobs:
 
           trap cleanup EXIT
 
-          # Prefer KVM when available; otherwise use software emulation.
           if [[ -e /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]; then
             ACCEL_ARGS=(-enable-kvm -cpu host)
           else
@@ -226,7 +225,6 @@ jobs:
               break
             fi
 
-            # Fail early if QEMU has already exited.
             QEMU_PID="$(sudo cat "$PIDFILE" 2>/dev/null || true)"
             if [[ "$QEMU_PID" =~ ^[0-9]+$ ]] &&
                ! sudo kill -0 "$QEMU_PID" 2>/dev/null; then
@@ -320,9 +318,6 @@ jobs:
 
           mkdir -p .github/tests
 
-          echo "Downloaded artifact contents:"
-          find collected -maxdepth 4 -type f -print | sort || true
-
           {
             echo "# Image test results"
             echo
@@ -334,22 +329,14 @@ jobs:
             echo "|---|---|---|"
 
             for variant in \
-              lts \
-              lto \
-              lto-nvidia \
-              ml \
-              ml-nvidia \
-              hyperscale \
-              hyperscale-nvidia; do
+              lts lto lto-nvidia ml ml-nvidia hyperscale hyperscale-nvidia; do
 
               status="collected/results-$variant/status.txt"
 
               if [[ -f "$status" ]]; then
                 build="$(sed -n 's/^build=//p' "$status")"
                 tests="$(sed -n 's/^tests=//p' "$status")"
-
-                printf '| %s | %s | %s |\n' \
-                  "$variant" "$build" "$tests"
+                printf '| %s | %s | %s |\n' "$variant" "$build" "$tests"
               else
                 printf '| %s | missing | missing |\n' "$variant"
               fi
@@ -362,30 +349,23 @@ jobs:
             echo
 
             for variant in \
-              lts \
-              lto \
-              lto-nvidia \
-              ml \
-              ml-nvidia \
-              hyperscale \
-              hyperscale-nvidia; do
+              lts lto lto-nvidia ml ml-nvidia hyperscale hyperscale-nvidia; do
 
               report="collected/results-$variant/report.md"
 
-              echo "## $variant"
+              echo "### $variant"
               echo
-
               if [[ -f "$report" ]]; then
                 sed '1{/^# Image test report$/d;}' "$report"
               else
-                echo "No system report was produced for this variant."
+                echo "System report unavailable."
               fi
 
               echo
-              echo "---"
-              echo
             done
 
+            echo "---"
+            echo
             echo "Full logs and raw command output are available in the workflow run artifacts."
           } > .github/tests/README.md
 
