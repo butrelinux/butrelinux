@@ -2,17 +2,17 @@ modules:
   - type: dnf
     install:
       packages:
-        - networkmanager-wifi
-        - networkmanager-tui
-        - networkmanager-openvpn
-        - networkmanager-openconnect
-        - networkmanager-l2tp
-        - networkmanager-libreswan
-        - networkmanager-wwan
-        - networkmanager-bluetooth
-        - networkmanager-ppp
+        - NetworkManager-wifi
+        - NetworkManager-tui
+        - NetworkManager-openvpn
+        - NetworkManager-openconnect
+        - NetworkManager-l2tp
+        - NetworkManager-libreswan
+        - NetworkManager-wwan
+        - NetworkManager-bluetooth
+        - NetworkManager-ppp
         - kf6-networkmanager-qt
-        - networkmanager
+        - NetworkManager
         - kde-partitionmanager
         - krfb
         - krdc
