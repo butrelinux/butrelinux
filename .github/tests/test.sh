@@ -51,10 +51,9 @@ KERNEL="$(cat "$RESULTS_DIR/uname.txt")"
 SYSTEM_STATE="$(cat "$RESULTS_DIR/system-state.txt")"
 
 PLASMA_VERSION="$(
-  guest 'plasmashell --version 2>/dev/null || rpm -q plasma-workspace 2>/dev/null || true' \
+  guest 'plasmashell --version 2>/dev/null || rpm -q --qf "%{VERSION}-%{RELEASE}\n" plasma-workspace 2>/dev/null || true' \
     2>/dev/null || true
 )"
-
 PLASMA_VERSION="${PLASMA_VERSION:-Not detected}"
 
 printf '%s\n' "$PLASMA_VERSION" \
@@ -64,23 +63,39 @@ NVIDIA_VERSION="Not applicable"
 
 if grep -qi nvidia "$IMAGE_INFO"; then
   NVIDIA_VERSION="$(
-    guest 'rpm -q --qf "%{VERSION}-%{RELEASE}\n" akmod-nvidia kmod-nvidia 2>/dev/null; rpm -q --qf "%{VERSION}-%{RELEASE}\n" xorg-x11-drv-nvidia 2>/dev/null; modinfo -F version nvidia 2>/dev/null' \
-      2>/dev/null |
-      sed '/^$/d' |
-      sort -u |
-      paste -sd ', ' - || true
+    guest 'modinfo -F version nvidia 2>/dev/null || true' \
+      2>/dev/null || true
   )"
 
-  NVIDIA_VERSION="${NVIDIA_VERSION:-Installed driver not detected}"
-
-  if guest 'nvidia-smi --query-gpu=driver_version --format=csv,noheader' \
-      > "$RESULTS_DIR/nvidia-smi.txt" 2>/dev/null; then
-    NVIDIA_GPU_STATUS="GPU detected"
-  else
-    NVIDIA_GPU_STATUS="No GPU detected in VM"
-    rm -f "$RESULTS_DIR/nvidia-smi.txt"
+  if [[ -z "$NVIDIA_VERSION" ]]; then
+    NVIDIA_VERSION="$(
+      guest 'cat /proc/driver/nvidia/version 2>/dev/null || true' \
+        2>/dev/null || true
+    )"
+    NVIDIA_VERSION="$(
+      printf '%s\n' "$NVIDIA_VERSION" |
+        sed -n 's/.*Kernel Module[[:space:]]*\([0-9][^ ]*\).*/\1/p' |
+        head -n 1
+    )"
   fi
+
+  NVIDIA_VERSION="${NVIDIA_VERSION:-Not detected}"
 fi
+
+printf '%s\n' "$NVIDIA_VERSION" \
+  > "$RESULTS_DIR/nvidia-version.txt"
+
+MESA_VERSION="$(
+  guest 'rpm -q --qf "%{NAME} %{VERSION}-%{RELEASE}\n" "mesa*" 2>/dev/null || true' \
+    2>/dev/null |
+    sort -u |
+    paste -sd '; ' - || true
+)"
+
+MESA_VERSION="${MESA_VERSION:-Not detected}"
+
+printf '%s\n' "$MESA_VERSION" \
+  > "$RESULTS_DIR/mesa-version.txt"
 
 {
   echo "# Image test report"
@@ -91,10 +106,10 @@ fi
   printf '| Kernel | `%s` |\n' "$KERNEL"
   printf '| systemd | %s |\n' "$SYSTEM_STATE"
   printf '| KDE Plasma | %s |\n' "$PLASMA_VERSION"
+  printf '| Mesa | %s |\n' "$MESA_VERSION"
 
   if grep -qi nvidia "$IMAGE_INFO"; then
     printf '| NVIDIA driver | %s |\n' "$NVIDIA_VERSION"
-    printf '| NVIDIA GPU | %s |\n' "$NVIDIA_GPU_STATUS"
   fi
 } > "$REPORT"
 
