@@ -5,11 +5,6 @@ modules:
        - JetBrainsMono
        - NerdFontsSymbolsOnly
        - Noto
-       
-  - type: dnf
-    install:
-      packages:
-        - linux-firmware
         
   - type: systemd
     system:
@@ -18,13 +13,13 @@ modules:
         - tuned.service
         - tuned-ppd.service
         - earlyoom.service
+        - networkmanager.service
       disabled:
         - nfs-client.target
       masked:
         - rpcbind.service
         - rpcbind.socket
         - system-flatpak-setup.timer
-        - systemd-resolved.service
 
   - type: kargs
     kargs:
