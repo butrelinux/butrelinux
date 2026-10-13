@@ -16,9 +16,10 @@ get_config() {
 FASTFETCH_BIN="${FASTFETCH_BIN:-$(command -v fastfetch)}"
 
 if [ -z "${FASTFETCH_BIN}" ] || [ ! -x "${FASTFETCH_BIN}" ]; then
-    echo "Error: fastfetch is not installed or is not executable." >&2
-	echo "For more detailed output, install fastfetch with \e[31mpkg-add fastfetch\e[0m or ensure it is in your PATH."
-	echo ""
+	printf '%s\n' \
+    'Error: fastfetch is not installed or is not executable.' >&2
+	printf 'For more detailed output, install fastfetch with \033[31mpkg-add fastfetch\033[0m or ensure it is in your PATH.'
+	printf '\n'
 	printf '\033[1;36m%s\033[0m\n' "$(whoami)@$(hostname)"
 	printf '%s\n' '----------------'
 	printf 'OS   %s\n' "$(uname -s)"
