@@ -13,7 +13,7 @@ modules:
         - tuned.service
         - tuned-ppd.service
         - earlyoom.service
-        - networkmanager.service
+        - NetworkManager.service
       disabled:
         - nfs-client.target
       masked:
