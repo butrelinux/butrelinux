@@ -47,5 +47,5 @@ this shouldn't ever be an issue, but it's worth documenting.
 
 ## migration
 
-we're still migrating from butrejp/butrelinux.  pretty close to done though.  existing users can freely rebase to the lto variant (either nvidia or non), I have more work to do on other kernel versions.  
+we're still migrating from butrejp/butrelinux.  pretty close to done though.  existing users can freely rebase to any variant (some old features aren't in place yet, some are being dropped.  if you need brew or soar then stay on the old images, they'll keep building anyway.  the new images get nix instead)  
 new users will be able to get an ISO from either this repository's releases or sourceforge, sometime in the next few days/weeks.  
