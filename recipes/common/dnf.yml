@@ -7,6 +7,7 @@ modules:
         - insights-client
         - insights-core
         - subscription-manager
+  - type: dnf
     install:
       packages:
         - linux-firmware
@@ -71,6 +72,7 @@ modules:
         - pipewire-utils
         - plasma-pa
         - nvtop
+  - type: dnf
     install:
       install-weak-deps: false
       packages:
