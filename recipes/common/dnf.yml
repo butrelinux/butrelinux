@@ -1,85 +1,84 @@
 modules:
   - type: dnf
     remove:
-      - auto-remove: true
-        packages:
-          - linux-firmware
-          - rhc
-          - insights-client
-          - insights-core
-          - subscription-manager
+      packages:
+        - linux-firmware
+        - rhc
+        - insights-client
+        - insights-core
+        - subscription-manager
     install:
-      - install-weak-deps: true
-        packages:
-          - linux-firmware
-          - NetworkManager-wifi
-          - NetworkManager-tui
-          - NetworkManager-openvpn
-          - NetworkManager-openconnect
-          - NetworkManager-l2tp
-          - NetworkManager-libreswan
-          - NetworkManager-wwan
-          - NetworkManager-bluetooth
-          - NetworkManager-ppp
-          - kf6-networkmanager-qt
-          - NetworkManager
-          - kde-partitionmanager
-          - krfb
-          - krdc
-          - khelpcenter
-          - policycoreutils
-          - policycoreutils-python-utils
-          - policycoreutils-devel
-          - selinux-policy-targeted
-          - libsemanage
-          - plasma-desktop
-          - plasma-workspace-wayland
-          - kde-settings-plasma
-          - flatpak-kcm
-          - kscreen
-          - kinfocenter
-          - sddm
-          - sddm-kcm
-          - sddm-breeze
-          - polkit-kde
-          - plasma-nm
-          - plasma-disks
-          - plasma-browser-integration
-          - kde-connect
-          - bluedevil
-          - dolphin
-          - konsole
-          - kio-admin
-          - ark
-          - spectacle
-          - okular
-          - plasma-systemmonitor
-          - kde-gtk-config
-          - kcalc
-          - htop
-          - xdg-desktop-portal-kde
-          - powerdevil
-          - tuned
-          - tuned-ppd
-          - tuned-profiles-atomic
-          - lm_sensors
-          - earlyoom
-          - pipewire 
-          - pipewire-pulseaudio
-          - pipewire-alsa
-          - wireplumber
-          - pipewire-jack-audio-connection-kit
-          - alsa-firmware
-          - pipewire-utils
-          - plasma-pa
-          - nvtop
+      install-weak-deps: true
+      packages:
+        - linux-firmware
+        - NetworkManager-wifi
+        - NetworkManager-tui
+        - NetworkManager-openvpn
+        - NetworkManager-openconnect
+        - NetworkManager-l2tp
+        - NetworkManager-libreswan
+        - NetworkManager-wwan
+        - NetworkManager-bluetooth
+        - NetworkManager-ppp
+        - kf6-networkmanager-qt
+        - NetworkManager
+        - kde-partitionmanager
+        - krfb
+        - krdc
+        - khelpcenter
+        - policycoreutils
+        - policycoreutils-python-utils
+        - policycoreutils-devel
+        - selinux-policy-targeted
+        - libsemanage
+        - plasma-desktop
+        - plasma-workspace-wayland
+        - kde-settings-plasma
+        - flatpak-kcm
+        - kscreen
+        - kinfocenter
+        - sddm
+        - sddm-kcm
+        - sddm-breeze
+        - polkit-kde
+        - plasma-nm
+        - plasma-disks
+        - plasma-browser-integration
+        - kde-connect
+        - bluedevil
+        - dolphin
+        - konsole
+        - kio-admin
+        - ark
+        - spectacle
+        - okular
+        - plasma-systemmonitor
+        - kde-gtk-config
+        - kcalc
+        - htop
+        - xdg-desktop-portal-kde
+        - powerdevil
+        - tuned
+        - tuned-ppd
+        - tuned-profiles-atomic
+        - lm_sensors
+        - earlyoom
+        - pipewire 
+        - pipewire-pulseaudio
+        - pipewire-alsa
+        - wireplumber
+        - pipewire-jack-audio-connection-kit
+        - alsa-firmware
+        - pipewire-utils
+        - plasma-pa
+        - nvtop
     install:
-      - install-weak-deps: false
-        packages:
-          - plasma-discover
-          - plasma-discover-flatpak
-          - plasma-discover-libs
-          - plasma-discover-kns
+      install-weak-deps: false
+      packages:
+        - plasma-discover
+        - plasma-discover-flatpak
+        - plasma-discover-libs
+        - plasma-discover-kns
 
   - type: fedora-rpm
     source: local
