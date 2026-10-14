@@ -99,6 +99,8 @@ modules:
         - pipewire-utils
         - plasma-pa
         - nvtop
+        - distrobox
+
   - type: dnf
     install:
       install-weak-deps: false
