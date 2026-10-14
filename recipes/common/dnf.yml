@@ -1,7 +1,6 @@
 modules:
   - type: dnf
     replace:
-      install-weak-deps: true
       packages:
         - linux-firmware
     install:
