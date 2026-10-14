@@ -100,7 +100,8 @@ modules:
         - plasma-pa
         - nvtop
         - distrobox
-
+        - firewalld
+        
   - type: dnf
     install:
       install-weak-deps: false
