@@ -1,2 +1,3 @@
-* text=auto eol=lf
-.github/** merge=ours
+* text=auto     eol=lf
+*.jpg           binary
+.github/**      merge=ours
