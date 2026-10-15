@@ -17,6 +17,7 @@ modules:
       disabled:
         - nfs-client.target
       masked:
+        - rpm-ostree-countme.service
         - rpcbind.service
         - rpcbind.socket
         - system-flatpak-setup.timer
