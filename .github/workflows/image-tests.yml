@@ -283,7 +283,7 @@ jobs:
 
       - name: Upload variant results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: results-${{ matrix.variant }}
           path: results/${{ matrix.variant }}/
@@ -394,7 +394,7 @@ jobs:
 
       - name: Upload combined report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: all-image-test-results
           path: |
