@@ -14,8 +14,8 @@ modules:
         - tuned-ppd.service
         - earlyoom.service
         - NetworkManager.service
-        - sddm-var-mount-theme.service
-        - sddm-var-mount-faces.service
+        - sddm-var-mount-faces.mount
+        - sddm-var-mount-theme.mount
       disabled:
         - nfs-client.target
       masked:
