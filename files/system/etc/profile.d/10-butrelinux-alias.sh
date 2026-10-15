@@ -39,3 +39,21 @@ pkg-run() {
     shift
     nix run "$pkg" -- "$@"
 }
+pkg-list() {
+    nix profile list
+}
+pkg-info() {
+    if [ "$#" -eq 0 ]; then
+        echo "Usage: pkg-info <package>" >&2
+        return 1
+    fi
+    local pkg="nixpkgs#$1"
+    nix search "$pkg" --json | jq -r '.[].description'
+}
+pkg-search() {
+    if [ "$#" -eq 0 ]; then
+        echo "Usage: pkg-search <pattern>" >&2
+        return 1
+    fi
+    nix run nixpkgs#nix-search-cli -- "$@"
+}
