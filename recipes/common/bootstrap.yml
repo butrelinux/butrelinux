@@ -13,3 +13,5 @@ modules:
       - chmod +x /usr/bin/givemethekeys
       - chmod +x /usr/bin/bfetch
       - chmod +x /usr/bin/image-info.sh
+      - mkdir -p /var/usrlocal/share/sddm/themes
+      - chmod 755 /var/usrlocal/share/sddm/themes
