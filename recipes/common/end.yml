@@ -18,6 +18,7 @@ modules:
         - nfs-client.target
       masked:
         - rpm-ostree-countme.service
+        - rpm-ostree-countme.timer
         - rpcbind.service
         - rpcbind.socket
         - system-flatpak-setup.timer
