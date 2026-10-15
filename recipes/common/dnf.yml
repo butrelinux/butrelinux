@@ -10,6 +10,25 @@ modules:
   - type: dnf
     install:
       packages:
+
+        # gstreamer stack
+        - gstreamer1
+        - gstreamer1-plugin-libav
+        - gstreamer1-plugins-bad-free
+        - gstreamer1-plugins-bad-free-libs
+        - gstreamer1-plugins-base
+        - gstreamer1-plugins-base-tools
+        - gstreamer1-plugins-good
+        - gstreamer1-plugins-ugly-free
+        - gstreamer1-svt-av1
+        - gstreamer1-svt-vp9
+        - libcamera-gstreamer
+        - libnice-gstreamer1
+        - lsp-plugins-gstreamer
+        - pipewire-gstreamer
+        - vlc-plugin-gstreamer
+
+        # firmware
         - linux-firmware
         - amd-ucode-firmware
         - amd-gpu-firmware
@@ -38,6 +57,8 @@ modules:
         - uhd-firmware
         - iscan-firmware
         - linux-firmware
+
+        # network manager
         - NetworkManager-wifi
         - NetworkManager-tui
         - NetworkManager-openvpn
@@ -49,15 +70,19 @@ modules:
         - NetworkManager-ppp
         - kf6-networkmanager-qt
         - NetworkManager
-        - kde-partitionmanager
-        - krfb
-        - krdc
+
+        # selinux
         - khelpcenter
         - policycoreutils
         - policycoreutils-python-utils
         - policycoreutils-devel
         - selinux-policy-targeted
         - libsemanage
+
+        # kde
+        - kde-partitionmanager
+        - krfb
+        - krdc
         - plasma-desktop
         - plasma-workspace-wayland
         - kde-settings-plasma
@@ -82,13 +107,14 @@ modules:
         - plasma-systemmonitor
         - kde-gtk-config
         - kcalc
-        - htop
         - xdg-desktop-portal-kde
+        - plasma-pa
+
+        # core bits
         - powerdevil
         - tuned
         - tuned-ppd
         - tuned-profiles-atomic
-        - lm_sensors
         - earlyoom
         - pipewire 
         - pipewire-pulseaudio
@@ -97,11 +123,14 @@ modules:
         - pipewire-jack-audio-connection-kit
         - alsa-firmware
         - pipewire-utils
-        - plasma-pa
+        - firewalld
+
+        # userspace
         - nvtop
         - distrobox
-        - firewalld
-        
+        - lm_sensors
+        - htop
+
   - type: dnf
     install:
       install-weak-deps: false
