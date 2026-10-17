@@ -124,6 +124,7 @@ modules:
         - alsa-firmware
         - pipewire-utils
         - firewalld
+        - zram-generator
 
         # userspace
         - nvtop
