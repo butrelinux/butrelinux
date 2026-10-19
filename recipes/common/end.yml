@@ -15,7 +15,7 @@ modules:
         - earlyoom.service
         - NetworkManager.service
         - usr-share-sddm-faces.mount
-        - usr-share-sddm-theme.mount
+        - usr-share-sddm-themes.mount
       disabled:
         - nfs-client.target
       masked:
