@@ -14,8 +14,8 @@ modules:
         - tuned-ppd.service
         - earlyoom.service
         - NetworkManager.service
-        - sddm-var-mount-faces.mount
-        - sddm-var-mount-theme.mount
+        - usr-share-sddm-faces.mount
+        - usr-share-sddm-theme.mount
       disabled:
         - nfs-client.target
       masked:
@@ -24,6 +24,8 @@ modules:
         - rpcbind.service
         - rpcbind.socket
         - system-flatpak-setup.timer
+        - bootc-fetch-apply-updates.service
+        - bootc-fetch-apply-updates.timer
 
   - type: kargs
     kargs:
