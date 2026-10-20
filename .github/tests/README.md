@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#46](https://github.com/butrelinux/butrelinux/actions/runs/39341891957)
+Workflow run: [#47](https://github.com/butrelinux/butrelinux/actions/runs/39350120246)
 
 Overall matrix result: **success**
 
@@ -25,7 +25,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 6.12.0-275.el10.x86_64 x86_64` |
-| systemd | starting |
+| systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 
@@ -36,7 +36,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.2.11-cachyos1.lto.el10.x86_64 x86_64` |
-| systemd | starting |
+| systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 
@@ -47,7 +47,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.2.11-cachyos1.lto.el10.x86_64 x86_64` |
-| systemd | starting |
+| systemd | degraded |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 615.78.08 |
@@ -59,7 +59,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.2.11-1.el10.elrepo.x86_64 x86_64` |
-| systemd | starting |
+| systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 
@@ -70,7 +70,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.2.11-1.el10.elrepo.x86_64 x86_64` |
-| systemd | starting |
+| systemd | degraded |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 615.78.08 |
@@ -82,7 +82,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64 x86_64` |
-| systemd | starting |
+| systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 
@@ -93,7 +93,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64 x86_64` |
-| systemd | starting |
+| systemd | degraded |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 615.78.08 |
