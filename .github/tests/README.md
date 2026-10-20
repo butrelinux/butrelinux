@@ -1,17 +1,17 @@
 # Image test results
 
-Workflow run: [#48](https://github.com/butrelinux/butrelinux/actions/runs/39394198263)
+Workflow run: [#49](https://github.com/butrelinux/butrelinux/actions/runs/39403540731)
 
 Overall matrix result: **failure**
 
 | Variant | Build | Tests |
 |---|---|---|
-| lts | success | failure |
-| lto | success | failure |
+| lts | success | success |
+| lto | success | success |
 | lto-nvidia | success | failure |
-| ml | success | failure |
-| ml-nvidia | success | failure |
-| hyperscale | success | failure |
+| ml | success | success |
+| ml-nvidia | success | cancelled |
+| hyperscale | success | success |
 | hyperscale-nvidia | success | failure |
 
 ---
@@ -20,11 +20,25 @@ Overall matrix result: **failure**
 
 ### lts
 
-System report unavailable.
+
+| Property | Value |
+|---|---|
+| OS | butrelinux |
+| Kernel | `Linux 6.12.0-275.el10.x86_64` |
+| systemd | running |
+| KDE Plasma | 6.7.5-1.el10_4 |
+| Mesa | 26.1.1-2.el10 |
 
 ### lto
 
-System report unavailable.
+
+| Property | Value |
+|---|---|
+| OS | butrelinux |
+| Kernel | `Linux 7.2.11-cachyos1.lto.el10.x86_64` |
+| systemd | running |
+| KDE Plasma | 6.7.5-1.el10_4 |
+| Mesa | 26.1.1-2.el10 |
 
 ### lto-nvidia
 
@@ -32,7 +46,14 @@ System report unavailable.
 
 ### ml
 
-System report unavailable.
+
+| Property | Value |
+|---|---|
+| OS | butrelinux |
+| Kernel | `Linux 7.2.11-1.el10.elrepo.x86_64` |
+| systemd | running |
+| KDE Plasma | 6.7.5-1.el10_4 |
+| Mesa | 26.1.1-2.el10 |
 
 ### ml-nvidia
 
@@ -40,7 +61,14 @@ System report unavailable.
 
 ### hyperscale
 
-System report unavailable.
+
+| Property | Value |
+|---|---|
+| OS | butrelinux |
+| Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64` |
+| systemd | running |
+| KDE Plasma | 6.7.5-1.el10_4 |
+| Mesa | 26.1.1-2.el10 |
 
 ### hyperscale-nvidia
 
