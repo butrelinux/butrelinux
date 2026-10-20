@@ -49,7 +49,7 @@ guest 'uname -sr' \
 # disables and resets nvidia-related units 
 # because github runners don't have a gpu, this is the likely fix for the degraded status on nvidia images
 guest_sudo 'units=$(systemctl list-unit-files --no-legend --no-pager |
-  awk '$1 ~ /^nvidia-/ { print $1 }')
+  grep -oE '^nvidia-[^[:space:]]+')
 if [[ -n "$units" ]]; then
   systemctl stop $units || true
   systemctl disable $units || true
