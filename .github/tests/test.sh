@@ -24,6 +24,13 @@ guest() {
     "$SSH_USER@$SSH_HOST" "$@"
 }
 
+guest_sudo() {
+  {
+    printf '%s\n' "$SSHPASS"
+    printf '%s\n' "$1"
+  } | guest 'sudo -S -p "" bash -s'
+}
+
 REPORT="$RESULTS_DIR/report.md"
 IMAGE_INFO="$RESULTS_DIR/image-info.json"
 
@@ -34,8 +41,20 @@ echo "Testing $SSH_USER@$SSH_HOST:$SSH_PORT"
 guest 'cat /etc/os-release' \
   > "$RESULTS_DIR/os-release.txt"
 
-guest 'uname -srm' \
+# -sr already produces .x86_64, -m turned out to be unnecessary for el10 packaging conventions
+guest 'uname -sr' \
   > "$RESULTS_DIR/uname.txt"
+
+
+# disables and resets nvidia-related units 
+# because github runners don't have a gpu, this is the likely source of the degraded status on nvidia images
+guest_sudo 'units=$(systemctl list-unit-files --no-legend --no-pager |
+  awk '$1 ~ /^nvidia-/ { print $1 }')
+if [[ -n "$units" ]]; then
+  systemctl stop $units || true
+  systemctl disable $units || true
+  systemctl reset-failed $units
+fi'
 
 guest 'systemctl is-system-running || true' \
   > "$RESULTS_DIR/system-state.txt"
