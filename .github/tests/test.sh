@@ -53,7 +53,7 @@ guest_sudo 'units=$(systemctl list-unit-files --no-legend --no-pager |
 if [[ -n "$units" ]]; then
   systemctl stop $units || true
   systemctl disable $units || true
-  systemctl reset-failed $units
+  systemctl reset-failed $units || true
 fi'
 
 guest 'systemctl is-system-running || true' \
