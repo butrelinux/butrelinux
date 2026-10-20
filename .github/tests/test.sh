@@ -27,6 +27,8 @@ guest() {
 REPORT="$RESULTS_DIR/report.md"
 IMAGE_INFO="$RESULTS_DIR/image-info.json"
 
+sleep 360
+
 echo "Testing $SSH_USER@$SSH_HOST:$SSH_PORT"
 
 guest 'cat /etc/os-release' \
