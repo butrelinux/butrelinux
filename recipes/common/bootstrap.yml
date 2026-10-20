@@ -13,3 +13,7 @@ modules:
       - chmod +x /usr/bin/givemethekeys
       - chmod +x /usr/bin/bfetch
       - chmod +x /usr/bin/image-info.sh
+      - mkdir -p /var/lib/sddm/themes
+      - mkdir -p /var/lib/sddm/faces
+      - mkdir -p /var/lib/sddm/.theme-work
+      - mkdir -p /var/lib/sddm/.face-work
