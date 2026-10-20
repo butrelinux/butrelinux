@@ -47,7 +47,7 @@ guest 'uname -sr' \
 
 
 # disables and resets nvidia-related units 
-# because github runners don't have a gpu, this is the likely source of the degraded status on nvidia images
+# because github runners don't have a gpu, this is the likely fix for the degraded status on nvidia images
 guest_sudo 'units=$(systemctl list-unit-files --no-legend --no-pager |
   awk '$1 ~ /^nvidia-/ { print $1 }')
 if [[ -n "$units" ]]; then
