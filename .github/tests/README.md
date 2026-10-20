@@ -1,18 +1,18 @@
 # Image test results
 
-Workflow run: [#47](https://github.com/butrelinux/butrelinux/actions/runs/39350120246)
+Workflow run: [#48](https://github.com/butrelinux/butrelinux/actions/runs/39394198263)
 
-Overall matrix result: **success**
+Overall matrix result: **failure**
 
 | Variant | Build | Tests |
 |---|---|---|
-| lts | success | success |
-| lto | success | success |
-| lto-nvidia | success | success |
-| ml | success | success |
-| ml-nvidia | success | success |
-| hyperscale | success | success |
-| hyperscale-nvidia | success | success |
+| lts | success | failure |
+| lto | success | failure |
+| lto-nvidia | success | failure |
+| ml | success | failure |
+| ml-nvidia | success | failure |
+| hyperscale | success | failure |
+| hyperscale-nvidia | success | failure |
 
 ---
 
@@ -20,83 +20,31 @@ Overall matrix result: **success**
 
 ### lts
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 6.12.0-275.el10.x86_64 x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
+System report unavailable.
 
 ### lto
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.2.11-cachyos1.lto.el10.x86_64 x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
+System report unavailable.
 
 ### lto-nvidia
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.2.11-cachyos1.lto.el10.x86_64 x86_64` |
-| systemd | degraded |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+System report unavailable.
 
 ### ml
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.2.11-1.el10.elrepo.x86_64 x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
+System report unavailable.
 
 ### ml-nvidia
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.2.11-1.el10.elrepo.x86_64 x86_64` |
-| systemd | degraded |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+System report unavailable.
 
 ### hyperscale
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64 x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
+System report unavailable.
 
 ### hyperscale-nvidia
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64 x86_64` |
-| systemd | degraded |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+System report unavailable.
 
 ---
 
