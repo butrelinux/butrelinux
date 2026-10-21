@@ -94,6 +94,7 @@ modules:
 
         # KDE Plasma desktop
         - plasma-desktop
+        - powerdevil
         - plasma-workspace-wayland
         - kde-settings-plasma
         - sddm
