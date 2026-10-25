@@ -33,17 +33,20 @@ sudo bootc switch --enforce-container-sigpolicy ghcr.io/butrelinux/<variant>:lat
 | ghcr.io/butrelinux/hyperscale:latest        	| this tracks the hyperscale SIG kernel.  <br>if you don't know whether you need this, you don't                                 	|
 | ghcr.io/butrelinux/hyperscale-nvidia:latest 	| same as above, plus nvidia.  wild how that works                                                                               	|
 
+there's also the lab image.  you probably don't want that.  `ghcr.io/butrelinux/lab:latest` is worth trying in a vm though, if you're into that sort of thing.  the files at /installation can help you with that.  
+
 ### verification
 
 these images are signed with sigstore's cosign. you can verify the signature by downloading the cosign.pub file from this repo and running the following command:  
 ```
 cosign verify --key cosign.pub ghcr.io/butrelinux/lts:latest
 ```
-if you ever hit ASN.1 invalid signature failure during an upgrade it's because I rotated out the keys.  sorry.  it was probably dependabot's fault.  you can fetch the new keys with the following command
+if you ever hit ASN.1 invalid signature failure during an upgrade it's because I rotated out the keys.  sorry.  it was probably dependabot's fault.  you're supposed to do it every so often for cryptoperiod compliance anyway though.  
+you can fetch the new keys with the following command:  
 ```
 sudo curl -Lo /etc/pki/containers/butrelinux.pub https://raw.githubusercontent.com/butrelinux/butrelinux/refs/heads/main/cosign.pub
 ```
-this shouldn't ever be an issue, but it's worth documenting.
+this shouldn't ever be an issue, but it's worth documenting.  I hope to have a system in place to automate this before it becomes a problem.  
 
 ## migration
 
