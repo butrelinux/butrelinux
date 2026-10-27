@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#53](https://github.com/butrelinux/butrelinux/actions/runs/40472975703)
+Workflow run: [#54](https://github.com/butrelinux/butrelinux/actions/runs/40518141768)
 
 Overall matrix result: **success**
 
