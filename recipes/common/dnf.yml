@@ -17,6 +17,7 @@ modules:
         - tuned-ppd
         - tuned-profiles-atomic
         - zram-generator
+        - glibc-all-langpacks
 
         # firmware
         - linux-firmware
