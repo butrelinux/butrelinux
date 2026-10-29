@@ -48,7 +48,7 @@ pkg-info() {
         return 1
     fi
     local pkg="nixpkgs#$1"
-    nix search "$pkg" --json | jq -r '.[].description'
+    nix search "$pkg" ^ --json | jq -r '.[].description'
 }
 pkg-search() {
     if [ "$#" -eq 0 ]; then
