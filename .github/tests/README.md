@@ -1,8 +1,8 @@
 # Image test results
 
-Workflow run: [#55](https://github.com/butrelinux/butrelinux/actions/runs/40713838495)
+Workflow run: [#56](https://github.com/butrelinux/butrelinux/actions/runs/41269590954)
 
-Overall matrix result: **success**
+Overall matrix result: **failure**
 
 | Variant | Build | Tests |
 |---|---|---|
@@ -10,9 +10,9 @@ Overall matrix result: **success**
 | lto | success | success |
 | lto-nvidia | success | success |
 | ml | success | success |
-| ml-nvidia | success | success |
+| ml-nvidia | skipped | skipped |
 | hyperscale | success | success |
-| hyperscale-nvidia | success | success |
+| hyperscale-nvidia | skipped | skipped |
 
 ---
 
@@ -58,22 +58,14 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.2.13-1.el10.elrepo.x86_64` |
+| Kernel | `Linux 7.3.1-1.el10.elrepo.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 
 ### ml-nvidia
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.2.13-1.el10.elrepo.x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+System report unavailable.
 
 ### hyperscale
 
@@ -88,15 +80,7 @@ Overall matrix result: **success**
 
 ### hyperscale-nvidia
 
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 7.1.3-0.hs1.hsk.el10.x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+System report unavailable.
 
 ---
 
