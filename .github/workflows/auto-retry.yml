@@ -2,7 +2,7 @@ name: Auto Retry Failed Jobs
 
 on:
   workflow_run:
-    workflows: ["bluebuild"]
+    workflows: ["bluebuild", "Build and test images"]
     types:
       - completed
 
