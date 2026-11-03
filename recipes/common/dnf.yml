@@ -18,6 +18,8 @@ modules:
         - tuned-profiles-atomic
         - zram-generator
         - glibc-all-langpacks
+        - cargo
+        
 
         # firmware
         - linux-firmware
