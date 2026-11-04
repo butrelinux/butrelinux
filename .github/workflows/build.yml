@@ -39,4 +39,4 @@ jobs:
           maximize_build_space: true
           chunkah: true
           verify_install: true
-          cli_version: v0.9.40 # unpin asap when upstream slsa issues are resolved 
+          cli_version: v0.9.37 # unpin asap when upstream slsa issues are resolved 
