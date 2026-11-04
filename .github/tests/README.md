@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#56](https://github.com/butrelinux/butrelinux/actions/runs/41269590954)
+Workflow run: [#71](https://github.com/butrelinux/butrelinux/actions/runs/41905020130)
 
 Overall matrix result: **success**
 
@@ -24,7 +24,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 6.12.0-279.el10.x86_64` |
+| Kernel | `Linux 6.12.0-280.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -35,7 +35,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.0-4.cachyos1.lto.el10.x86_64` |
+| Kernel | `Linux 7.3.1-1.cachyos1.lto.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -46,11 +46,11 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.0-4.cachyos1.lto.el10.x86_64` |
+| Kernel | `Linux 7.3.1-1.cachyos1.lto.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+| NVIDIA driver | 620.70.06 |
 
 ### ml
 
@@ -73,7 +73,7 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+| NVIDIA driver | 620.70.06 |
 
 ### hyperscale
 
@@ -96,7 +96,7 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 615.78.08 |
+| NVIDIA driver | 620.70.06 |
 
 ---
 
