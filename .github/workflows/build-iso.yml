@@ -58,7 +58,7 @@ jobs:
           menu_entries=""
           for image in $IMAGES; do
             echo "Generating kickstart for ${image}..."
-            sed "s|@IMAGE@|${image}|g" kickstarts/base.cfg \
+            sed "s|@IMAGE@|${image}|g" boot/ks-base.cfg \
               > "generated-kickstarts/${image}.cfg"
 
             menu_entries="${menu_entries}
