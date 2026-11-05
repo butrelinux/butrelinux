@@ -1,6 +1,6 @@
 modules:
   - type: nix
-    source: local
+    source: ghcr.io/butrelinux/modules
     flavor: upstream 
     nix-version: latest
     experimental-features: [nix-command, flakes]

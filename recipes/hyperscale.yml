@@ -8,15 +8,14 @@ image-version: c10s
 modules:
   - from-file: common/common.yml
 
-
   - type: custom-kernel
-    source: local
+    source: ghcr.io/butrelinux/modules
     kernel: hyperscale
     initramfs: true
     nvidia: false
 
   - type: image-info
-    source: local
+    source: ghcr.io/butrelinux/modules
     variant: hyperscale
   
   - from-file: common/end.yml

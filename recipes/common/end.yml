@@ -33,6 +33,6 @@ modules:
       - split_lock_detect=off
 
   - type: clean-repos
-    source: local
+    source: ghcr.io/butrelinux/modules
 
   - type: signing

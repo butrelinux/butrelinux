@@ -9,13 +9,13 @@ modules:
   - from-file: common/common.yml
 
   - type: custom-kernel
-    source: local
+    source: ghcr.io/butrelinux/modules
     kernel: cachyos-lto
     initramfs: true
     nvidia: true
 
   - type: image-info
-    source: local
+    source: ghcr.io/butrelinux/modules
     variant: lto-nvidia  
   
   - from-file: common/end.yml

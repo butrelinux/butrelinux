@@ -148,7 +148,7 @@ modules:
         - plasma-discover-kns
 
   - type: fedora-rpm
-    source: local
+    source: ghcr.io/butrelinux/modules
     releasever: "44"
     repos:
       - https://copr.fedorainfracloud.org/coprs/theblackdon/dcli-bootc/repo/fedora-44/theblackdon-dcli-bootc-fedora-44.repo
