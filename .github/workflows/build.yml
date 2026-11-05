@@ -38,5 +38,5 @@ jobs:
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
           chunkah: true
-          #verify_install: true
-          #cli_version: v0.9.37 # unpin asap when upstream slsa issues are resolved 
+          verify_install: true
+          cli_version: v0.9.41 # unpin asap when upstream slsa issues are resolved 
