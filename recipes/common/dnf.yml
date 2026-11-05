@@ -19,8 +19,10 @@ modules:
         - zram-generator
         - glibc-all-langpacks
         - cargo
+        - plymouth 
+        - plymouth-graphics-libs
+        - plymouth-system-theme
         
-
         # firmware
         - linux-firmware
         - amd-gpu-firmware
