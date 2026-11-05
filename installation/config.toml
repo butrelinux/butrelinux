@@ -1,7 +1,0 @@
-# config.toml
-
-# Define a default user account and credentials
-[[customizations.user]]
-name = "butrelinux"
-password = "butrelinux"
-groups = ["wheel"]
