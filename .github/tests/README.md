@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#81](https://github.com/butrelinux/butrelinux/actions/runs/42132198337)
+Workflow run: [#82](https://github.com/butrelinux/butrelinux/actions/runs/42174267519)
 
 Overall matrix result: **success**
 
@@ -70,7 +70,7 @@ Overall matrix result: **success**
 |---|---|
 | OS | butrelinux |
 | Kernel | `Linux 7.3.1-1.el10.elrepo.x86_64` |
-| systemd | running |
+| systemd | degraded |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 620.70.06 |
