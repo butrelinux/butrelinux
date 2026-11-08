@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#84](https://github.com/butrelinux/butrelinux/actions/runs/42363566929)
+Workflow run: [#85](https://github.com/butrelinux/butrelinux/actions/runs/42433727829)
 
 Overall matrix result: **success**
 
@@ -20,6 +20,8 @@ Overall matrix result: **success**
 
 ### lts
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -28,9 +30,12 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
+```
 
 ### lto
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -39,9 +44,12 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
+```
 
 ### lto-nvidia
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -51,9 +59,12 @@ Overall matrix result: **success**
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 620.70.06 |
+```
 
 ### ml
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -62,9 +73,12 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
+```
 
 ### ml-nvidia
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -74,9 +88,12 @@ Overall matrix result: **success**
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 620.70.06 |
+```
 
 ### hyperscale
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -85,9 +102,12 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
+```
 
 ### hyperscale-nvidia
 
+```
+# Image test report
 
 | Property | Value |
 |---|---|
@@ -97,6 +117,7 @@ Overall matrix result: **success**
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
 | NVIDIA driver | 620.70.06 |
+```
 
 ---
 
