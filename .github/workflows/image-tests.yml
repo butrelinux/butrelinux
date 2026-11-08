@@ -1,3 +1,4 @@
+
 name: Build and test images
 
 on:
@@ -5,10 +6,12 @@ on:
     workflows: ["bluebuild"]
     types:
       - completed
+    branches:
+      - main
   workflow_dispatch:
 
-permissions:
-  contents: write
+# No permissions by default. Grant them per job.
+permissions: {}
 
 concurrency:
   group: image-tests-${{ github.event.workflow_run.head_branch || github.ref }}
@@ -17,11 +20,24 @@ concurrency:
 jobs:
   test:
     name: Test ${{ matrix.variant }}
+
+    # Only test successful bluebuild runs, or manual dispatches
+    # from the trusted default branch.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (
+        github.event_name == 'workflow_dispatch' &&
+        github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      ) ||
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success'
+      )
+
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+
+    permissions:
+      contents: read
 
     strategy:
       fail-fast: false
@@ -38,10 +54,11 @@ jobs:
           # there are some loops down in generate combined readme that includes these as well.  fix the duplication later.  for now, just be sure to add them there too
 
     steps:
-      - name: Check out repository
+      - name: Check out trusted repository revision
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
 
       - name: Install dependencies
         run: |
@@ -292,9 +309,21 @@ jobs:
 
   aggregate:
     name: Aggregate results and publish README
-    if: always()
+
+    # Always collect results for workflow_run, including failed upstream
+    # builds. Only permit manual dispatch from the default branch.
+    if: >-
+      always() &&
+      (
+        github.event_name != 'workflow_dispatch' ||
+        github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      )
+
     needs: test
     runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
 
     steps:
       - name: Check out default branch
@@ -316,62 +345,139 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p .github/tests
+          python3 - <<'PY'
+          import pathlib
+          import re
+          import os
 
-          {
-            echo "# Image test results"
-            echo
-            echo "Workflow run: [#${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
-            echo
-            echo "Overall matrix result: **${MATRIX_RESULT}**"
-            echo
-            echo "| Variant | Build | Tests |"
-            echo "|---|---|---|"
+          variants = [
+              "lts",
+              "lto",
+              "lto-nvidia",
+              "ml",
+              "ml-nvidia",
+              "hyperscale",
+              "hyperscale-nvidia",
+          ]
 
-            for variant in \
-              lts lto lto-nvidia ml ml-nvidia hyperscale hyperscale-nvidia; do
+          allowed_outcomes = {
+              "success",
+              "failure",
+              "cancelled",
+              "skipped",
+          }
 
-              status="collected/results-$variant/status.txt"
+          lines = [
+              "# Image test results",
+              "",
+              f"Workflow run: [#{os.environ['GITHUB_RUN_NUMBER']}]"
+              f"({os.environ['GITHUB_SERVER_URL']}/"
+              f"{os.environ['GITHUB_REPOSITORY']}/actions/runs/"
+              f"{os.environ['GITHUB_RUN_ID']})",
+              "",
+              f"Overall matrix result: **{os.environ['MATRIX_RESULT']}**",
+              "",
+              "| Variant | Build | Tests |",
+              "|---|---|---|",
+          ]
 
-              if [[ -f "$status" ]]; then
-                build="$(sed -n 's/^build=//p' "$status")"
-                tests="$(sed -n 's/^tests=//p' "$status")"
-                printf '| %s | %s | %s |\n' "$variant" "$build" "$tests"
-              else
-                printf '| %s | missing | missing |\n' "$variant"
-              fi
-            done
+          for variant in variants:
+              status = pathlib.Path(
+                  f"collected/results-{variant}/status.txt"
+              )
 
-            echo
-            echo "---"
-            echo
-            echo "# System details"
-            echo
+              values = {}
 
-            for variant in \
-              lts lto lto-nvidia ml ml-nvidia hyperscale hyperscale-nvidia; do
+              if status.is_file() and not status.is_symlink():
+                  for line in status.read_text(
+                      encoding="utf-8", errors="replace"
+                  ).splitlines():
+                      if "=" not in line:
+                          continue
 
-              report="collected/results-$variant/report.md"
+                      key, value = line.split("=", 1)
 
-              echo "### $variant"
-              echo
-              if [[ -f "$report" ]]; then
-                sed '1{/^# Image test report$/d;}' "$report"
-              else
-                echo "System report unavailable."
-              fi
+                      if key in ("build", "tests"):
+                          values[key] = value
 
-              echo
-            done
+              build = values.get("build", "missing")
+              tests = values.get("tests", "missing")
 
-            echo "---"
-            echo
-            echo "Full logs and raw command output are available in the workflow run artifacts."
-          } > .github/tests/README.md
+              if build not in allowed_outcomes:
+                  build = "invalid"
+
+              if tests not in allowed_outcomes:
+                  tests = "invalid"
+
+              lines.append(
+                  f"| {variant} | {build} | {tests} |"
+              )
+
+          lines.extend([
+              "",
+              "---",
+              "",
+              "# System details",
+              "",
+          ])
+
+          for variant in variants:
+              report = pathlib.Path(
+                  f"collected/results-{variant}/report.md"
+              )
+
+              lines.extend([
+                  f"### {variant}",
+                  "",
+              ])
+
+              if report.is_file() and not report.is_symlink():
+                  content = report.read_text(
+                      encoding="utf-8", errors="replace"
+                  ).strip()
+
+                  # Reports are untrusted artifact content.
+                  # Render them as literal code rather than Markdown.
+                  longest = max(
+                      (
+                          len(match.group(0))
+                          for match in re.finditer(r"`+", content)
+                      ),
+                      default=0,
+                  )
+
+                  fence = "`" * max(3, longest + 1)
+
+                  lines.extend([
+                      fence,
+                      content,
+                      fence,
+                  ])
+              else:
+                  lines.append("System report unavailable.")
+
+              lines.append("")
+
+          lines.extend([
+              "---",
+              "",
+              "Full logs and raw command output are available "
+              "in the workflow run artifacts.",
+              "",
+          ])
+
+          pathlib.Path(".github/tests/README.md").write_text(
+              "\n".join(lines),
+              encoding="utf-8",
+          )
+          PY
 
       - name: Commit README to default branch
         if: >-
-          github.event_name == 'workflow_dispatch' ||
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+          ) ||
           (
             github.event_name == 'workflow_run' &&
             github.event.workflow_run.conclusion == 'success'
