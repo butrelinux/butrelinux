@@ -10,7 +10,6 @@ on:
       - main
   workflow_dispatch:
 
-# No permissions by default. Grant them per job.
 permissions: {}
 
 concurrency:
