@@ -1,6 +1,6 @@
 # Image test results
 
-Workflow run: [#86](https://github.com/butrelinux/butrelinux/actions/runs/42443815810)
+Workflow run: [#87](https://github.com/butrelinux/butrelinux/actions/runs/43676843902)
 
 Overall matrix result: **success**
 
@@ -26,7 +26,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 6.12.0-281.el10.x86_64` |
+| Kernel | `Linux 6.12.0-284.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -40,7 +40,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.1-1.cachyos1.lto.el10.x86_64` |
+| Kernel | `Linux 7.3.4-1.cachyos1.lto.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -54,7 +54,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.1-1.cachyos1.lto.el10.x86_64` |
+| Kernel | `Linux 7.3.4-1.cachyos1.lto.el10.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -69,7 +69,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.3-1.el10.elrepo.x86_64` |
+| Kernel | `Linux 7.3.4-1.el10.elrepo.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -83,7 +83,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.3-1.el10.elrepo.x86_64` |
+| Kernel | `Linux 7.3.4-1.el10.elrepo.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
