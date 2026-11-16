@@ -22,6 +22,7 @@ modules:
         - plymouth 
         - plymouth-graphics-libs
         - plymouth-system-theme
+        - systemd-container
         
         # firmware
         - linux-firmware
@@ -146,11 +147,3 @@ modules:
         - plasma-discover-flatpak
         - plasma-discover-libs
         - plasma-discover-kns
-
-  - type: fedora-rpm
-    source: ghcr.io/butrelinux/modules
-    releasever: "44"
-    repos:
-      - https://copr.fedorainfracloud.org/coprs/theblackdon/dcli-bootc/repo/fedora-44/theblackdon-dcli-bootc-fedora-44.repo
-    install:
-      - dcli-bootc
