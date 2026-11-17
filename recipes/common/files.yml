@@ -9,3 +9,4 @@ modules:
       - chmod +x /usr/bin/givemethekeys
       - chmod +x /usr/bin/bfetch
       - chmod +x /usr/bin/image-info.sh
+      - chmod +x /usr/bin/dnf-compare
