@@ -35,14 +35,14 @@ def parse_evr(evr_str):
 for line in sys.stdin:
     pkg, inst, avail = line.rstrip("\n").split("\t")
     if avail == "NOT_IN_REPO":
-        print(f"{pkg:<40} {inst:<28} {avail:<28} Local / Orphaned")
+        print(f"{pkg:<40} {inst:<28} {avail:<28} LOCAL_ORPHANED")
     elif inst != avail:
         res = rpm.labelCompare(parse_evr(inst), parse_evr(avail))
         if res > 0:
-            status = "Ahead of repo"
+            status = "AHEAD_OF_REPO"
         elif res < 0:
-            status = "Update available"
+            status = "UPDATE_AVAILABLE"
         else:
-            status = "Epoch/format diff"
+            status = "EPOCH_FORMAT_DIFF"
         print(f"{pkg:<40} {inst:<28} {avail:<28} {status}")
 '
