@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+if ! command -v dnf &> /dev/null; then
+    echo "Error: dnf is required for this script." >&2
+    exit 1
+fi
+
+INSTALLED_LIST=$(mktemp)
+AVAILABLE_LIST=$(mktemp)
+trap 'rm -f "$INSTALLED_LIST" "$AVAILABLE_LIST"' EXIT
+
+echo "Gathering installed packages..."
+# Exclude gpg-pubkey virtual packages and sort strictly by column 1 in C locale
+rpm -qa --qf "%{NAME}.%{ARCH}\t%{EPOCHNUM}:%{VERSION}-%{RELEASE}\n" \
+    | grep -v '^gpg-pubkey\.' \
+    | LC_ALL=C sort -t $'\t' -k1,1 -u > "$INSTALLED_LIST"
+
+echo "Gathering latest available packages from repositories..."
+dnf repoquery --quiet --latest-limit=1 --qf "%{name}.%{arch}\t%{epoch}:%{version}-%{release}\n" \
+    | LC_ALL=C sort -t $'\t' -k1,1 -u > "$AVAILABLE_LIST"
+
+echo -e "\nComparing versions (hiding up-to-date packages)...\n"
+printf "%-40s %-28s %-28s %s\n" "PACKAGE.ARCH" "INSTALLED" "AVAILABLE" "STATUS"
+printf "%-40s %-28s %-28s %s\n" "----------------------------------------" "----------------------------" "----------------------------" "----------------"
+
+LC_ALL=C join -t $'\t' -a 1 -e "NOT_IN_REPO" -o 0,1.2,2.2 "$INSTALLED_LIST" "$AVAILABLE_LIST" | \
+python3 -c '
+import sys, rpm
+
+def parse_evr(evr_str):
+    epoch, vr = evr_str.split(":", 1)
+    ver, rel = vr.split("-", 1)
+    return (epoch, ver, rel)
+
+for line in sys.stdin:
+    pkg, inst, avail = line.rstrip("\n").split("\t")
+    if avail == "NOT_IN_REPO":
+        print(f"{pkg:<40} {inst:<28} {avail:<28} Local / Orphaned")
+    elif inst != avail:
+        res = rpm.labelCompare(parse_evr(inst), parse_evr(avail))
+        if res > 0:
+            status = "Ahead of repo"
+        elif res < 0:
+            status = "Update available"
+        else:
+            status = "Epoch/format diff"
+        print(f"{pkg:<40} {inst:<28} {avail:<28} {status}")
+'
