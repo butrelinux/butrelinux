@@ -1,5 +1,5 @@
 [![bluebuild build badge](https://github.com/butrelinux/butrelinux/actions/workflows/build.yml/badge.svg)](https://github.com/butrelinux/butrelinux/actions/workflows/build.yml) [![Build Butrelinux ISO](https://github.com/butrelinux/butrelinux/actions/workflows/build-iso.yml/badge.svg)](https://github.com/butrelinux/butrelinux/actions/workflows/build-iso.yml) [![smoke tests](https://github.com/butrelinux/butrelinux/actions/workflows/image-tests.yml/badge.svg)](https://github.com/butrelinux/butrelinux/actions/workflows/image-tests.yml)  
-[![works on my machine badge](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.4.0/badge.svg)](https://github.com/nikku/works-on-my-machine) [![Download butrelinux](https://img.shields.io/sourceforge/dt/butrelinux.svg)](https://butrelinux.sourceforge.io/)
+[![works on my machine badge](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.4.0/badge.svg)](https://github.com/nikku/works-on-my-machine) [![CodeFactor](https://www.codefactor.io/repository/github/butrelinux/butrelinux/badge)](https://www.codefactor.io/repository/github/butrelinux/butrelinux) [![Download butrelinux](https://img.shields.io/sourceforge/dt/butrelinux.svg)](https://butrelinux.sourceforge.io/)
 # butrelinux
 Centos Stream 10 bootc with KDE plasma and many kernel choices  
 
