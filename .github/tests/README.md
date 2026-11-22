@@ -1,12 +1,12 @@
 # Image test results
 
-Workflow run: [#90](https://github.com/butrelinux/butrelinux/actions/runs/44007674377)
+Workflow run: [#91](https://github.com/butrelinux/butrelinux/actions/runs/44984736557)
 
-Overall matrix result: **success**
+Overall matrix result: **failure**
 
 | Variant | Build | Tests |
 |---|---|---|
-| lts | success | success |
+| lts | skipped | skipped |
 | lto | success | success |
 | lto-nvidia | success | success |
 | ml | success | success |
@@ -20,17 +20,7 @@ Overall matrix result: **success**
 
 ### lts
 
-```
-# Image test report
-
-| Property | Value |
-|---|---|
-| OS | butrelinux |
-| Kernel | `Linux 6.12.0-284.el10.x86_64` |
-| systemd | running |
-| KDE Plasma | 6.7.5-1.el10_4 |
-| Mesa | 26.1.1-2.el10 |
-```
+System report unavailable.
 
 ### lto
 
@@ -58,7 +48,7 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 620.70.06 |
+| NVIDIA driver | 620.73.04 |
 ```
 
 ### ml
@@ -69,7 +59,7 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.4-1.el10.elrepo.x86_64` |
+| Kernel | `Linux 7.3.5-1.el10.elrepo.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
@@ -83,11 +73,11 @@ Overall matrix result: **success**
 | Property | Value |
 |---|---|
 | OS | butrelinux |
-| Kernel | `Linux 7.3.4-1.el10.elrepo.x86_64` |
+| Kernel | `Linux 7.3.5-1.el10.elrepo.x86_64` |
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 620.70.06 |
+| NVIDIA driver | 620.73.04 |
 ```
 
 ### hyperscale
@@ -116,7 +106,7 @@ Overall matrix result: **success**
 | systemd | running |
 | KDE Plasma | 6.7.5-1.el10_4 |
 | Mesa | 26.1.1-2.el10 |
-| NVIDIA driver | 620.70.06 |
+| NVIDIA driver | 620.73.04 |
 ```
 
 ---
