@@ -2,11 +2,11 @@
 
 Workflow run: [#91](https://github.com/butrelinux/butrelinux/actions/runs/44984736557)
 
-Overall matrix result: **failure**
+Overall matrix result: **success**
 
 | Variant | Build | Tests |
 |---|---|---|
-| lts | skipped | skipped |
+| lts | success | success |
 | lto | success | success |
 | lto-nvidia | success | success |
 | ml | success | success |
@@ -20,7 +20,17 @@ Overall matrix result: **failure**
 
 ### lts
 
-System report unavailable.
+```
+# Image test report
+
+| Property | Value |
+|---|---|
+| OS | butrelinux |
+| Kernel | `Linux 6.12.0-284.el10.x86_64` |
+| systemd | running |
+| KDE Plasma | 6.7.5-1.el10_4 |
+| Mesa | 26.1.1-2.el10 |
+```
 
 ### lto
 
