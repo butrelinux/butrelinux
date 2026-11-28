@@ -17,7 +17,7 @@ IFS=$'\n\t'
 
 readonly CONTAINER_NAME="butrelinux-extras"
 readonly BASE_IMAGE="quay.io/fedora/fedora-minimal:44"
-readonly IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+readonly IMAGE_INFO="/usr/share/butrelinux/image-info.json"
 readonly MARKER_DIR="${HOME}/.local/share/butrelinux-extras"
 readonly MARKER_FILE="${MARKER_DIR}/managed"
 
